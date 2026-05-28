@@ -22,15 +22,15 @@
         <ContentSection title="Contact details" heading-id="contact-heading">
           <ul class="list-none space-y-4">
             <li class="body-text">
-              <span class="font-semibold text-slate-950">Email:</span>
+              <span class="text-strong">Email:</span>
               <a :href="`mailto:${service.contactEmail}`" class="link-inline ml-1">{{ service.contactEmail }}</a>
             </li>
             <li class="body-text">
-              <span class="font-semibold text-slate-950">Phone:</span>
+              <span class="text-strong">Phone:</span>
               <a :href="`tel:${service.phone.replace(/\s/g, '')}`" class="link-inline ml-1">{{ service.phone }}</a>
             </li>
             <li class="body-text">
-              <span class="font-semibold text-slate-950">Online support:</span>
+              <span class="text-strong">Online support:</span>
               {{ service.onlineSupport ? 'Available' : 'Not available' }}
             </li>
           </ul>
@@ -48,7 +48,7 @@
           </p>
         </ContentSection>
 
-        <p class="mt-10 border-t border-slate-200 pt-8 sm:mt-12 sm:pt-10">
+        <p class="theme-divider mt-10 border-t pt-8 sm:mt-12 sm:pt-10">
           <AppButton to="/request-support" variant="primary">
             Request support
           </AppButton>

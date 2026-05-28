@@ -4,13 +4,15 @@
     role="status"
     aria-live="polite"
   >
-    <p class="text-base font-semibold leading-relaxed text-green-900 sm:text-lg">
+    <CheckCircleIcon class="alert-success-icon" aria-hidden="true" />
+    <p class="text-base font-semibold leading-relaxed sm:text-lg">
       {{ message }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { CheckCircleIcon } from '@heroicons/vue/24/outline'
 import type { StatusMessageProps } from '~/interfaces/components/atoms/StatusMessageProps'
 
 defineProps<StatusMessageProps>()

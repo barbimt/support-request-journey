@@ -6,14 +6,20 @@
     <div class="flex flex-col gap-6">
       <div class="form-field">
         <label for="service-search" class="form-label">Search services</label>
-        <input
-          id="service-search"
-          type="search"
-          class="form-input"
-          :value="search"
-          autocomplete="off"
-          @input="emit('update:search', ($event.target as HTMLInputElement).value)"
-        >
+        <div class="relative">
+          <MagnifyingGlassIcon
+            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-700 dark:text-slate-400"
+            aria-hidden="true"
+          />
+          <input
+            id="service-search"
+            type="search"
+            class="form-input pl-12"
+            :value="search"
+            autocomplete="off"
+            @input="emit('update:search', ($event.target as HTMLInputElement).value)"
+          >
+        </div>
       </div>
       <div class="form-field">
         <label for="service-category" class="form-label">Filter by category</label>
@@ -36,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import type { ServiceCategory } from '~/interfaces/service'
 import type { ServiceFiltersEmits, ServiceFiltersProps } from '~/interfaces/components/organisms/ServiceFiltersProps'
 import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'

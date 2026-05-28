@@ -1,6 +1,6 @@
 <template>
   <div class="card-panel" role="status">
-    <p class="text-base leading-relaxed text-slate-800 sm:text-lg">
+    <p class="body-text">
       {{ message }}
     </p>
   </div>

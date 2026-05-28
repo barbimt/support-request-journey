@@ -1,11 +1,15 @@
 <template>
-  <header class="border-b border-slate-200 bg-white">
-    <div class="container-app flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:py-5">
-      <p class="m-0">
-        <NuxtLink to="/" class="site-title">
-          Support Request Journey
-        </NuxtLink>
-      </p>
+  <header class="site-header">
+    <div class="site-header-accent" aria-hidden="true" />
+    <div class="container-app flex flex-col gap-4 py-4 sm:py-5">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="m-0">
+          <NuxtLink to="/" class="site-title">
+            Support Request Journey
+          </NuxtLink>
+        </p>
+        <ThemeToggle />
+      </div>
       <nav aria-label="Main">
         <ul class="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:gap-2">
           <li v-for="link in navLinks" :key="link.to">

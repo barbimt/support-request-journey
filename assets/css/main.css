@@ -8,37 +8,92 @@
   }
 
   body {
-    @apply bg-stone-50 text-base leading-relaxed text-slate-950 antialiased;
+    @apply bg-stone-100 text-base leading-relaxed text-slate-950 antialiased dark:bg-slate-950 dark:text-slate-50;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgb(16 185 129 / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgb(120 113 108 / 0.06), transparent);
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgb(16 185 129 / 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgb(51 65 85 / 0.4), transparent);
   }
 }
 
 @layer components {
+  /*
+   * Border radius scale (consistency; not a WCAG requirement)
+   * - Controls (buttons, inputs, nav, badges): rounded-md (~6px)
+   * - Surfaces (cards, panels, alerts, fieldsets): rounded-lg (~8px)
+   */
+
   .container-app {
     @apply mx-auto w-full max-w-3xl px-4 sm:max-w-4xl sm:px-6 lg:max-w-5xl lg:px-8;
   }
 
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:border-2 focus:border-slate-700 focus:bg-white focus:px-4 focus:py-3 focus:text-base focus:font-semibold focus:text-slate-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400;
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:border-2 focus:border-stone-600 focus:bg-white focus:px-4 focus:py-3 focus:text-base focus:font-semibold focus:text-slate-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:focus:border-slate-400 dark:focus:bg-slate-900 dark:focus:text-slate-50 dark:focus-visible:outline-amber-300;
   }
 
   .btn {
-    @apply inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-transparent px-6 py-3 text-base font-semibold leading-normal transition-colors motion-reduce:transition-none focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto;
+    @apply inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border-2 border-transparent px-6 py-3 text-base font-semibold leading-normal transition-[color,background-color,border-color,transform] duration-200 motion-reduce:transition-none focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:outline-amber-300 sm:w-auto;
   }
 
   .btn-primary {
-    @apply btn border-teal-900 bg-teal-900 text-white hover:border-teal-800 hover:bg-teal-800;
+    @apply btn border-emerald-800 bg-emerald-800 text-white shadow-sm hover:-translate-y-px hover:border-emerald-700 hover:bg-emerald-700 hover:shadow motion-reduce:hover:translate-y-0 dark:border-emerald-500 dark:bg-emerald-600 dark:shadow-emerald-950/30 dark:hover:border-emerald-400 dark:hover:bg-emerald-500;
   }
 
   .btn-secondary {
-    @apply btn border-slate-700 bg-white text-slate-950 hover:bg-stone-100;
+    @apply btn border-stone-600 bg-white text-slate-950 shadow-sm hover:-translate-y-px hover:bg-stone-50 hover:shadow motion-reduce:hover:translate-y-0 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-50 dark:shadow-slate-950/50 dark:hover:bg-slate-800;
+  }
+
+  .theme-toggle {
+    @apply inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-md border-2 border-stone-600 bg-white px-3 py-2 text-base font-semibold text-slate-950 shadow-sm transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-stone-50 hover:shadow focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 motion-reduce:transition-none dark:border-slate-500 dark:bg-slate-900 dark:text-slate-50 dark:hover:bg-slate-800 dark:focus-visible:outline-amber-300 sm:w-auto;
+  }
+
+  .theme-toggle-icon {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-amber-100 to-emerald-100 text-emerald-900 dark:from-slate-800 dark:to-emerald-950 dark:text-amber-300;
+  }
+
+  .theme-toggle-label {
+    @apply text-left leading-tight;
   }
 
   .card {
-    @apply rounded-sm border border-slate-200 bg-white p-6;
+    @apply rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition-[border-color,box-shadow] duration-200 dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/40;
+  }
+
+  .card-interactive {
+    @apply card hover:border-emerald-700/40 hover:shadow-md motion-reduce:hover:shadow-sm dark:hover:border-emerald-500/40;
   }
 
   .card-panel {
-    @apply rounded-sm border border-slate-200 bg-white p-4 sm:p-6;
+    @apply rounded-lg border border-stone-200 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/40;
+  }
+
+  .hero-panel {
+    @apply rounded-lg border border-stone-200 bg-gradient-to-br from-white via-stone-50 to-emerald-50/50 p-6 shadow-sm sm:p-8 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/40 dark:shadow-slate-950/50;
+  }
+
+  .info-panel {
+    @apply rounded-lg border border-stone-200 border-l-4 border-l-emerald-700 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700 dark:border-l-emerald-500 dark:bg-slate-900 dark:shadow-slate-950/40;
+  }
+
+  .site-header {
+    @apply border-b border-stone-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90;
+  }
+
+  .site-header-accent {
+    @apply h-1 bg-gradient-to-r from-emerald-800 via-emerald-600 to-amber-500/80 dark:from-emerald-500 dark:via-emerald-400 dark:to-amber-400/70;
+  }
+
+  .site-footer {
+    @apply mt-auto border-t border-stone-200 bg-white dark:border-slate-700 dark:bg-slate-900;
+  }
+
+  .theme-divider {
+    @apply border-stone-200 dark:border-slate-700;
   }
 
   .form-field {
@@ -46,82 +101,105 @@
   }
 
   .form-label {
-    @apply block text-base font-semibold leading-normal text-slate-950;
+    @apply block text-base font-semibold leading-normal text-slate-950 dark:text-slate-50;
   }
 
   .form-input {
-    @apply min-h-11 w-full rounded-sm border-2 border-slate-300 bg-white px-4 py-3 text-base leading-normal text-slate-950 placeholder:text-slate-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-0 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:bg-stone-100;
+    @apply min-h-11 w-full rounded-md border-2 border-stone-300 bg-white px-4 py-3 text-base leading-normal text-slate-950 shadow-sm placeholder:text-stone-600 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-0 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:bg-stone-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-400 dark:shadow-none dark:disabled:bg-slate-800 dark:focus-visible:outline-amber-300;
   }
 
   .form-input[aria-invalid='true'] {
-    @apply border-red-700 bg-red-50;
+    @apply border-red-700 bg-red-50 dark:border-red-400 dark:bg-red-950;
   }
 
   .form-error {
-    @apply text-base font-semibold leading-normal text-red-900;
+    @apply text-base font-semibold leading-normal text-red-900 dark:text-red-200;
   }
 
   .form-hint {
-    @apply text-base leading-normal text-slate-800;
+    @apply text-base leading-normal text-stone-800 dark:text-slate-300;
   }
 
   .form-choice {
-    @apply h-6 w-6 shrink-0 border-2 border-slate-700 text-teal-900 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400;
+    @apply h-6 w-6 shrink-0 rounded-md border-2 border-stone-600 text-emerald-800 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:border-slate-400 dark:text-emerald-400 dark:focus-visible:outline-amber-300;
   }
 
   .form-choice-label {
-    @apply flex min-h-11 cursor-pointer items-center gap-3 py-2 text-base leading-normal text-slate-950;
+    @apply flex min-h-11 cursor-pointer items-center gap-3 py-2 text-base leading-normal text-slate-950 dark:text-slate-50;
   }
 
   .form-fieldset {
-    @apply space-y-3 rounded-sm border-2 border-slate-300 bg-white p-4 sm:p-6;
+    @apply space-y-3 rounded-lg border-2 border-stone-300 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-600 dark:bg-slate-900 dark:shadow-none;
   }
 
   .form-fieldset[aria-invalid='true'] {
-    @apply border-red-700 bg-red-50;
+    @apply border-red-700 bg-red-50 dark:border-red-400 dark:bg-red-950;
   }
 
   .badge {
-    @apply inline-block rounded-sm border border-teal-800 bg-teal-50 px-3 py-1 text-sm font-semibold leading-normal text-teal-900;
+    @apply inline-flex w-fit max-w-full self-start rounded-md border border-emerald-800 bg-emerald-50 px-3 py-1 text-sm font-semibold leading-normal text-emerald-900 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-200;
   }
 
   .link-inline {
-    @apply font-semibold text-teal-900 underline decoration-teal-900 decoration-2 underline-offset-2 hover:text-teal-800 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400;
+    @apply inline-flex items-center gap-1 font-semibold text-emerald-900 underline decoration-emerald-800 decoration-2 underline-offset-2 hover:text-emerald-800 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:text-emerald-300 dark:decoration-emerald-300 dark:hover:text-emerald-200 dark:focus-visible:outline-amber-300;
   }
 
   .nav-link {
-    @apply inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-base font-semibold text-slate-950 no-underline hover:bg-stone-100 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400;
+    @apply inline-flex min-h-11 items-center rounded-md px-3 py-2 text-base font-semibold text-slate-950 no-underline transition-colors duration-200 hover:bg-stone-100 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:text-slate-50 dark:hover:bg-slate-800 dark:focus-visible:outline-amber-300;
   }
 
   .nav-link[aria-current='page'] {
-    @apply border-b-4 border-teal-900 bg-stone-100;
+    @apply border-b-4 border-emerald-800 bg-stone-100 dark:border-emerald-400 dark:bg-slate-800;
   }
 
   .site-title {
-    @apply text-xl font-bold leading-tight text-slate-950 no-underline hover:text-teal-900 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:text-2xl;
+    @apply text-xl font-bold leading-tight tracking-tight text-slate-950 no-underline hover:text-emerald-800 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:text-slate-50 dark:hover:text-emerald-300 dark:focus-visible:outline-amber-300 sm:text-2xl;
   }
 
   .page-intro {
-    @apply mt-3 max-w-3xl text-lg leading-relaxed text-slate-800;
+    @apply mt-3 max-w-3xl text-lg leading-relaxed text-stone-800 dark:text-slate-300;
   }
 
   .body-text {
-    @apply text-base leading-relaxed text-slate-800 sm:text-lg;
+    @apply text-base leading-relaxed text-stone-800 dark:text-slate-300 sm:text-lg;
   }
 
   .section-heading {
-    @apply text-xl font-bold leading-tight text-slate-950 sm:text-2xl;
+    @apply text-xl font-bold leading-tight tracking-tight text-slate-950 dark:text-slate-50 sm:text-2xl;
   }
 
   .page-title {
-    @apply text-2xl font-bold leading-tight text-slate-950 sm:text-3xl;
+    @apply text-2xl font-bold leading-tight tracking-tight text-slate-950 dark:text-slate-50 sm:text-3xl;
+  }
+
+  .text-strong {
+    @apply font-semibold text-slate-950 dark:text-slate-50;
   }
 
   .alert-error {
-    @apply rounded-sm border-2 border-red-700 bg-red-50 p-4 sm:p-6;
+    @apply flex gap-4 rounded-lg border-2 border-red-700 bg-red-50 p-4 sm:p-6 dark:border-red-400 dark:bg-red-950;
+  }
+
+  .alert-error-icon {
+    @apply mt-0.5 h-6 w-6 shrink-0 text-red-900 dark:text-red-200;
+  }
+
+  .alert-error h2,
+  .alert-error p,
+  .alert-error li,
+  .alert-error a {
+    @apply text-red-900 dark:text-red-100;
   }
 
   .alert-success {
-    @apply rounded-sm border-2 border-green-700 bg-green-50 p-4 sm:p-6;
+    @apply flex gap-4 rounded-lg border-2 border-green-700 bg-green-50 p-4 sm:p-6 dark:border-green-500 dark:bg-green-950;
+  }
+
+  .alert-success-icon {
+    @apply mt-0.5 h-6 w-6 shrink-0 text-green-900 dark:text-green-100;
+  }
+
+  .alert-success p {
+    @apply text-green-900 dark:text-green-100;
   }
 }

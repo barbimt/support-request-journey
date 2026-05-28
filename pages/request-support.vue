@@ -111,7 +111,7 @@
         :aria-invalid="errorFor('preferredContact') ? 'true' : undefined"
       >
         <legend class="form-label px-1">
-          Preferred contact method <span class="font-semibold text-red-900">(required)</span>
+          Preferred contact method <span class="form-error inline">(required)</span>
         </legend>
         <div class="space-y-1">
           <label
@@ -158,14 +158,14 @@
               :aria-describedby="describedBy"
               :aria-invalid="invalid"
             >
-            <label for="consent" class="text-base leading-relaxed text-slate-950">
+            <label for="consent" class="body-text">
               I agree that my details can be used to respond to this request.
             </label>
           </div>
         </template>
       </FormField>
 
-      <div class="border-t border-slate-200 pt-8">
+      <div class="theme-divider border-t pt-8">
         <AppButton
           type="submit"
           variant="primary"

@@ -202,4 +202,56 @@
   .alert-success p {
     @apply text-green-900 dark:text-green-100;
   }
+
+  .error-page {
+    @apply py-6 sm:py-10;
+  }
+
+  .error-page-card {
+    @apply rounded-lg border-2 border-l-4 bg-white p-6 shadow-sm sm:p-8 dark:bg-slate-900;
+  }
+
+  .error-page-card--not-found {
+    @apply border-stone-200 border-l-amber-600 dark:border-slate-700 dark:border-l-amber-500;
+  }
+
+  .error-page-card--fault {
+    @apply border-stone-200 border-l-red-700 dark:border-slate-700 dark:border-l-red-400;
+  }
+
+  .error-page-status {
+    @apply theme-divider flex items-center gap-4 border-b pb-6;
+  }
+
+  .error-page-status-icon {
+    @apply h-10 w-10 shrink-0;
+  }
+
+  .error-page-card--not-found .error-page-status-icon {
+    @apply text-amber-800 dark:text-amber-400;
+  }
+
+  .error-page-card--fault .error-page-status-icon {
+    @apply text-red-800 dark:text-red-300;
+  }
+
+  .error-page-status-code {
+    @apply block text-2xl font-bold tabular-nums leading-none text-slate-950 dark:text-slate-50;
+  }
+
+  .error-page-status-label {
+    @apply mt-1 block text-base font-semibold text-stone-800 dark:text-slate-300;
+  }
+
+  .error-page-body {
+    @apply mt-6;
+  }
+
+  .error-page-next {
+    @apply theme-divider mt-8 border-t pt-8;
+  }
+
+  .error-page-actions {
+    @apply theme-divider mt-8 flex flex-col gap-4 border-t pt-8;
+  }
 }

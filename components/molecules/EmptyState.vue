@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EmptyStateProps } from '~/interfaces/components/EmptyStateProps'
+import type { EmptyStateProps } from '~/interfaces/components/molecules/EmptyStateProps'
 
 defineProps<EmptyStateProps>()
 </script>

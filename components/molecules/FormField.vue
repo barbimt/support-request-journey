@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormFieldProps } from '~/interfaces/components/FormFieldProps'
+import type { FormFieldProps } from '~/interfaces/components/molecules/FormFieldProps'
 
 const props = defineProps<FormFieldProps>()
 

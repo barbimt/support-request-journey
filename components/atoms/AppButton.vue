@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppButtonProps } from '~/interfaces/components/AppButtonProps'
+import type { AppButtonProps } from '~/interfaces/components/atoms/AppButtonProps'
 
 const props = withDefaults(defineProps<AppButtonProps>(), {
   variant: 'primary',

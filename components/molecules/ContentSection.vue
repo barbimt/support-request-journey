@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ContentSectionProps } from '~/interfaces/components/ContentSectionProps'
+import type { ContentSectionProps } from '~/interfaces/components/molecules/ContentSectionProps'
 
 defineProps<ContentSectionProps>()
 </script>

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import type { ServiceCategory } from '~/interfaces/service'
-import type { ServiceFiltersEmits, ServiceFiltersProps } from '~/interfaces/components/ServiceFiltersProps'
+import type { ServiceFiltersEmits, ServiceFiltersProps } from '~/interfaces/components/organisms/ServiceFiltersProps'
 import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
 
 defineProps<ServiceFiltersProps>()

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ErrorSummaryProps } from '~/interfaces/components/ErrorSummaryProps'
+import type { ErrorSummaryProps } from '~/interfaces/components/molecules/ErrorSummaryProps'
 
 defineProps<ErrorSummaryProps>()
 

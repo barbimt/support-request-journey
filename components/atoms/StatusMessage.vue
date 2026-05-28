@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StatusMessageProps } from '~/interfaces/components/StatusMessageProps'
+import type { StatusMessageProps } from '~/interfaces/components/atoms/StatusMessageProps'
 
 defineProps<StatusMessageProps>()
 </script>

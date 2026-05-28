@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ServiceCardProps } from '~/interfaces/components/ServiceCardProps'
+import type { ServiceCardProps } from '~/interfaces/components/molecules/ServiceCardProps'
 
 defineProps<ServiceCardProps>()
 </script>

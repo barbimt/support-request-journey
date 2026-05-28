@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PageHeaderProps } from '~/interfaces/components/PageHeaderProps'
+import type { PageHeaderProps } from '~/interfaces/components/molecules/PageHeaderProps'
 
 withDefaults(defineProps<PageHeaderProps>(), {
   tag: 'header',

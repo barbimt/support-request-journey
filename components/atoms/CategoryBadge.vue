@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CategoryBadgeProps } from '~/interfaces/components/CategoryBadgeProps'
+import type { CategoryBadgeProps } from '~/interfaces/components/atoms/CategoryBadgeProps'
 import { getCategoryLabel } from '~/utils/categories'
 
 defineProps<CategoryBadgeProps>()

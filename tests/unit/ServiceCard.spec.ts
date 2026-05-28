@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, expect, it } from 'vitest'
-import ServiceCard from '~/components/ServiceCard.vue'
+import ServiceCard from '~/components/molecules/ServiceCard.vue'
 import { mockServices } from '~/data/services'
 
 describe('ServiceCard', () => {

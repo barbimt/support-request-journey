@@ -14,6 +14,13 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'Support Request Journey',
+      script: [
+        {
+          key: 'theme-init',
+          innerHTML: `(function(){try{var k='support-journey-theme';var t=localStorage.getItem(k);var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}})();`,
+          type: 'text/javascript',
+        },
+      ],
     },
   },
 })

@@ -2,13 +2,13 @@
   <div class="form-field">
     <label :for="id" class="form-label">
       {{ label }}
-      <span v-if="required" class="text-red-800"> (required)</span>
+      <span v-if="required" class="form-error"> (required)</span>
     </label>
     <p v-if="hint" :id="`${id}-hint`" class="form-hint">
       {{ hint }}
     </p>
     <slot :described-by="describedBy" :invalid="!!error" />
-    <p v-if="error" :id="`${id}-error`" class="form-error">
+    <p v-if="error" :id="`${id}-error`" class="form-error" role="alert">
       {{ error }}
     </p>
   </div>

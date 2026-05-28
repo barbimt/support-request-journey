@@ -1,7 +1,9 @@
 <template>
-  <p class="text-lg text-slate-700">
-    {{ message }}
-  </p>
+  <div class="card-panel" role="status">
+    <p class="body-text">
+      {{ message }}
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">

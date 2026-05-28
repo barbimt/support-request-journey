@@ -1,7 +1,7 @@
 <template>
-  <p class="badge" :class="wrapperClass">
+  <span class="badge" :class="wrapperClass">
     {{ getCategoryLabel(category) }}
-  </p>
+  </span>
 </template>
 
 <script setup lang="ts">

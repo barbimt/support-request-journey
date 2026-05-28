@@ -22,5 +22,5 @@ test('support request journey from home to success', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Send support request' }).click()
 
-  await expect(page.getByRole('status')).toContainText('Your support request has been sent')
+  await expect(page.getByRole('status')).toContainText('Your support request has been submitted')
 })

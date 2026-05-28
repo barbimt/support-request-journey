@@ -6,6 +6,8 @@ export interface UseSupportRequestFormReturn {
   errors: Ref<ValidationError[]>
   isSubmitting: Ref<boolean>
   submitSuccess: Ref<boolean>
+  successMessage: Ref<string>
+  serverError: Ref<string>
   errorSummaryRef: Ref<{ focus: () => void } | null>
   supportForOptions: typeof SUPPORT_FOR_OPTIONS
   contactOptions: typeof CONTACT_OPTIONS

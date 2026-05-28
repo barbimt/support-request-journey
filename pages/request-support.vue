@@ -9,8 +9,19 @@
     <StatusMessage
       v-if="submitSuccess"
       class="mb-8"
-      message="Your support request has been sent. We will contact you soon."
+      :message="successMessage || 'Your support request has been sent. We will contact you soon.'"
     />
+
+    <div
+      v-if="serverError"
+      class="alert-error mb-8"
+      role="alert"
+      tabindex="-1"
+    >
+      <p class="text-base font-semibold leading-relaxed sm:text-lg">
+        {{ serverError }}
+      </p>
+    </div>
 
     <form novalidate class="max-w-2xl space-y-8" @submit.prevent="handleSubmit">
       <ErrorSummary
@@ -187,6 +198,8 @@ const {
   errors,
   isSubmitting,
   submitSuccess,
+  successMessage,
+  serverError,
   errorSummaryRef,
   supportForOptions,
   contactOptions,

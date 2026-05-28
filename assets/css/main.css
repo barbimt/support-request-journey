@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-surface text-slate-900 antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-600;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface-elevated focus:px-4 focus:py-2 focus:shadow-lg focus:ring-2 focus:ring-primary-600;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2.5 text-base font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-700 text-white hover:bg-primary-800 focus-visible:outline-primary-700;
+  }
+
+  .btn-secondary {
+    @apply btn border-2 border-primary-700 bg-surface-elevated text-primary-800 hover:bg-primary-50 focus-visible:outline-primary-700;
+  }
+
+  .card {
+    @apply rounded-lg border border-surface-border bg-surface-elevated p-6 shadow-sm;
+  }
+
+  .form-label {
+    @apply mb-1 block text-base font-medium text-slate-900;
+  }
+
+  .form-input {
+    @apply w-full rounded-md border border-slate-400 bg-white px-3 py-2 text-base text-slate-900;
+  }
+
+  .form-input[aria-invalid='true'] {
+    @apply border-red-700 ring-1 ring-red-700;
+  }
+
+  .form-error {
+    @apply mt-1 text-sm font-medium text-red-800;
+  }
+
+  .form-hint {
+    @apply mt-1 text-sm text-slate-600;
+  }
+
+  .badge {
+    @apply inline-block rounded-full bg-primary-100 px-3 py-0.5 text-sm font-medium text-primary-900;
+  }
+}

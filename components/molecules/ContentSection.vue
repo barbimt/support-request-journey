@@ -1,9 +1,11 @@
 <template>
-  <section class="mt-8" :aria-labelledby="headingId">
-    <h2 :id="headingId" class="text-2xl font-bold text-slate-900">
+  <section class="mt-8 border-t border-slate-200 pt-8 first:mt-0 first:border-t-0 first:pt-0 sm:mt-10 sm:pt-10" :aria-labelledby="headingId">
+    <h2 :id="headingId" class="section-heading">
       {{ title }}
     </h2>
-    <slot />
+    <div class="mt-4">
+      <slot />
+    </div>
   </section>
 </template>
 

@@ -1,17 +1,17 @@
 <template>
-  <header class="border-b border-surface-border bg-surface-elevated">
-    <div class="container-app flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-lg font-bold text-primary-900">
-        <NuxtLink to="/" class="rounded hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+  <header class="border-b border-slate-200 bg-white">
+    <div class="container-app flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:py-5">
+      <p class="m-0">
+        <NuxtLink to="/" class="site-title">
           Support Request Journey
         </NuxtLink>
       </p>
       <nav aria-label="Main">
-        <ul class="flex flex-wrap gap-2 sm:gap-4">
+        <ul class="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:gap-2">
           <li v-for="link in navLinks" :key="link.to">
             <NuxtLink
               :to="link.to"
-              class="rounded px-2 py-1 font-medium text-slate-800 hover:bg-primary-50 hover:text-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+              class="nav-link"
               :aria-current="isCurrent(link.to) ? 'page' : undefined"
             >
               {{ link.label }}

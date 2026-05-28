@@ -8,11 +8,11 @@
 
     <StatusMessage
       v-if="submitSuccess"
-      class="mb-6"
+      class="mb-8"
       message="Your support request has been sent. We will contact you soon."
     />
 
-    <form novalidate class="max-w-2xl space-y-6" @submit.prevent="handleSubmit">
+    <form novalidate class="max-w-2xl space-y-8" @submit.prevent="handleSubmit">
       <ErrorSummary
         v-if="errors.length"
         ref="errorSummaryRef"
@@ -106,24 +106,24 @@
 
       <fieldset
         id="preferredContact"
-        class="rounded-md border border-surface-border p-4"
+        class="form-fieldset"
         :aria-describedby="errorFor('preferredContact') ? 'preferredContact-error' : undefined"
         :aria-invalid="errorFor('preferredContact') ? 'true' : undefined"
       >
         <legend class="form-label px-1">
-          Preferred contact method <span class="text-red-800">(required)</span>
+          Preferred contact method <span class="font-semibold text-red-900">(required)</span>
         </legend>
-        <div class="space-y-2">
+        <div class="space-y-1">
           <label
             v-for="option in contactOptions"
             :key="option.value"
-            class="flex items-center gap-2 text-base text-slate-900"
+            class="form-choice-label"
           >
             <input
               v-model="form.preferredContact"
               type="radio"
               name="preferredContact"
-              class="h-4 w-4 border-slate-500 text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+              class="form-choice"
               :value="option.value"
             >
             {{ option.label }}
@@ -139,8 +139,8 @@
           <textarea
             id="message"
             v-model="form.message"
-            rows="5"
-            class="form-input"
+            rows="6"
+            class="form-input min-h-[8rem]"
             :aria-describedby="describedBy"
             :aria-invalid="invalid"
           />
@@ -149,30 +149,32 @@
 
       <FormField id="consent" label="Consent" :error="errorFor('consent')" required>
         <template #default="{ describedBy, invalid }">
-          <div class="flex items-start gap-2">
+          <div class="flex items-start gap-3">
             <input
               id="consent"
               v-model="form.consent"
               type="checkbox"
-              class="mt-1 h-4 w-4 rounded border-slate-500 text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+              class="form-choice mt-1"
               :aria-describedby="describedBy"
               :aria-invalid="invalid"
             >
-            <label for="consent" class="text-base text-slate-900">
+            <label for="consent" class="text-base leading-relaxed text-slate-950">
               I agree that my details can be used to respond to this request.
             </label>
           </div>
         </template>
       </FormField>
 
-      <AppButton
-        type="submit"
-        variant="primary"
-        :disabled="isSubmitting"
-        :aria-busy="isSubmitting"
-      >
-        {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
-      </AppButton>
+      <div class="border-t border-slate-200 pt-8">
+        <AppButton
+          type="submit"
+          variant="primary"
+          :disabled="isSubmitting"
+          :aria-busy="isSubmitting"
+        >
+          {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
+        </AppButton>
+      </div>
     </form>
   </AppContainer>
 </template>

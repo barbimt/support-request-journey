@@ -1,16 +1,16 @@
 <template>
   <article class="card flex h-full flex-col">
-    <CategoryBadge :category="service.category" wrapper-class="mb-3" />
-    <h2 class="text-xl font-bold text-slate-900">
+    <CategoryBadge :category="service.category" wrapper-class="mb-4" />
+    <h2 class="text-xl font-bold leading-tight text-slate-950">
       {{ service.title }}
     </h2>
-    <p class="mt-3 flex-1 text-slate-700">
+    <p class="mt-4 flex-1 text-base leading-relaxed text-slate-800">
       {{ service.description }}
     </p>
-    <p class="mt-4">
+    <p class="mt-6">
       <NuxtLink
         :to="`/services/${service.id}`"
-        class="font-semibold text-primary-800 underline decoration-primary-600 underline-offset-2 hover:text-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+        class="link-inline"
       >
         View service details<span class="sr-only"> for {{ service.title }}</span>
       </NuxtLink>

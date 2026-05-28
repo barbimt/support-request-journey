@@ -1,10 +1,10 @@
 <template>
   <div
-    class="rounded-md border-2 border-primary-700 bg-primary-50 p-4 text-primary-900"
+    class="alert-success"
     role="status"
     aria-live="polite"
   >
-    <p class="font-semibold">
+    <p class="text-base font-semibold leading-relaxed text-green-900 sm:text-lg">
       {{ message }}
     </p>
   </div>

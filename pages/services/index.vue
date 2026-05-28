@@ -9,10 +9,9 @@
     <ServiceFilters
       v-model:search="search"
       v-model:category="category"
-      class="mb-8"
     />
 
-    <div v-if="filteredServices.length" class="grid gap-6 sm:grid-cols-2">
+    <div v-if="filteredServices.length" class="grid gap-6 md:grid-cols-2 md:gap-8">
       <ServiceCard
         v-for="service in filteredServices"
         :key="service.id"

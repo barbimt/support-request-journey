@@ -1,23 +1,21 @@
 import { mockServices } from '~/data/services'
-import type { Service, ServiceCategory } from '~/types/service'
+import type { UseServicesReturn, ServiceFilterOptions } from '~/interfaces/composables/useServices'
+import type { Service } from '~/interfaces/service'
 
-export interface ServiceFilterOptions {
-  search: string
-  category: ServiceCategory | '' | 'all'
-}
+export type { ServiceFilterOptions, UseServicesReturn } from '~/interfaces/composables/useServices'
 
-export function useServices() {
+export const useServices = (): UseServicesReturn => {
   // Future: replace mockServices with $fetch('/api/services')
-  async function getServices(): Promise<Service[]> {
-    return mockServices
+  const getServices = async (): Promise<Service[]> => {
+    return [...mockServices]
   }
 
-  async function getServiceById(id: string): Promise<Service | null> {
+  const getServiceById = async (id: string): Promise<Service | null> => {
     const services = await getServices()
     return services.find((service) => service.id === id) ?? null
   }
 
-  function filterServices(services: Service[], options: ServiceFilterOptions): Service[] {
+  const filterServices = (services: Service[], options: ServiceFilterOptions): Service[] => {
     const query = options.search.trim().toLowerCase()
     const category = options.category
 

@@ -1,17 +1,6 @@
-<script setup lang="ts">
-import type { Service } from '~/types/service'
-import { getCategoryLabel } from '~/utils/categories'
-
-defineProps<{
-  service: Service
-}>()
-</script>
-
 <template>
   <article class="card flex h-full flex-col">
-    <p class="badge mb-3">
-      {{ getCategoryLabel(service.category) }}
-    </p>
+    <CategoryBadge :category="service.category" wrapper-class="mb-3" />
     <h2 class="text-xl font-bold text-slate-900">
       {{ service.title }}
     </h2>
@@ -28,3 +17,9 @@ defineProps<{
     </p>
   </article>
 </template>
+
+<script setup lang="ts">
+import type { ServiceCardProps } from '~/interfaces/components/ServiceCardProps'
+
+defineProps<ServiceCardProps>()
+</script>

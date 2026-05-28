@@ -1,6 +1,6 @@
-import type { Service } from '~/types/service'
+import type { Service } from '~/interfaces/service'
 
-export const mockServices: Service[] = [
+export const mockServices: readonly Service[] = [
   {
     id: 'housing-advice',
     title: 'Housing advice',

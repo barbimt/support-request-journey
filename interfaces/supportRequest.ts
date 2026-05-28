@@ -1,4 +1,4 @@
-import type { ServiceCategory } from '~/types/service'
+import type { ServiceCategory } from '~/interfaces/service'
 
 export type PreferredContactMethod = 'email' | 'phone' | 'either'
 

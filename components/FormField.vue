@@ -1,24 +1,3 @@
-<script setup lang="ts">
-const props = defineProps<{
-  id: string
-  label: string
-  error?: string
-  required?: boolean
-  hint?: string
-}>()
-
-const describedBy = computed(() => {
-  const ids: string[] = []
-  if (props.hint) {
-    ids.push(`${props.id}-hint`)
-  }
-  if (props.error) {
-    ids.push(`${props.id}-error`)
-  }
-  return ids.length ? ids.join(' ') : undefined
-})
-</script>
-
 <template>
   <div class="form-field">
     <label :for="id" class="form-label">
@@ -34,3 +13,20 @@ const describedBy = computed(() => {
     </p>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { FormFieldProps } from '~/interfaces/components/FormFieldProps'
+
+const props = defineProps<FormFieldProps>()
+
+const describedBy = computed((): string | undefined => {
+  const ids: string[] = []
+  if (props.hint) {
+    ids.push(`${props.id}-hint`)
+  }
+  if (props.error) {
+    ids.push(`${props.id}-error`)
+  }
+  return ids.length ? ids.join(' ') : undefined
+})
+</script>

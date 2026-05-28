@@ -1,9 +1,9 @@
-import type { SupportRequestForm, ValidationError } from '~/types/supportRequest'
+import type { SupportRequestForm, ValidationError } from '~/interfaces/supportRequest'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_PATTERN = /^[\d\s+()-]{7,20}$/
 
-export function validateSupportRequest(form: SupportRequestForm): ValidationError[] {
+export const validateSupportRequest = (form: SupportRequestForm): ValidationError[] => {
   const errors: ValidationError[] = []
 
   if (!form.fullName.trim()) {

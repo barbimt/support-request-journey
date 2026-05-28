@@ -1,17 +1,3 @@
-<script setup lang="ts">
-import type { ValidationError } from '~/types/supportRequest'
-
-defineProps<{
-  errors: ValidationError[]
-}>()
-
-const root = ref<HTMLElement | null>(null)
-
-defineExpose({
-  focus: () => root.value?.focus(),
-})
-</script>
-
 <template>
   <div
     v-if="errors.length"
@@ -32,3 +18,15 @@ defineExpose({
     </ul>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { ErrorSummaryProps } from '~/interfaces/components/ErrorSummaryProps'
+
+defineProps<ErrorSummaryProps>()
+
+const root = ref<HTMLElement | null>(null)
+
+defineExpose({
+  focus: (): void => root.value?.focus(),
+})
+</script>

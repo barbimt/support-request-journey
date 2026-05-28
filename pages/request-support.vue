@@ -1,84 +1,10 @@
-<script setup lang="ts">
-import type { SupportRequestForm, ValidationError } from '~/types/supportRequest'
-import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
-import { validateSupportRequest } from '~/utils/validateSupportRequest'
-
-const { submitSupportRequest } = useSupportRequest()
-
-const form = reactive<SupportRequestForm>({
-  fullName: '',
-  email: '',
-  phone: '',
-  supportFor: '',
-  supportType: '',
-  preferredContact: '',
-  message: '',
-  consent: false,
-})
-
-const errors = ref<ValidationError[]>([])
-const isSubmitting = ref(false)
-const submitSuccess = ref(false)
-const errorSummaryRef = ref<{ focus: () => void } | null>(null)
-
-const supportForOptions = [
-  { value: 'myself', label: 'Myself' },
-  { value: 'family-member', label: 'A family member' },
-  { value: 'friend', label: 'A friend' },
-  { value: 'someone-i-support', label: 'Someone I support professionally' },
-  { value: 'other', label: 'Someone else' },
-] as const
-
-const contactOptions = [
-  { value: 'email', label: 'Email' },
-  { value: 'phone', label: 'Phone' },
-  { value: 'either', label: 'Either email or phone' },
-] as const
-
-function errorFor(field: keyof SupportRequestForm): string | undefined {
-  return errors.value.find((entry) => entry.field === field)?.message
-}
-
-async function handleSubmit() {
-  submitSuccess.value = false
-  errors.value = validateSupportRequest(form)
-
-  if (errors.value.length) {
-    await nextTick()
-    errorSummaryRef.value?.focus()
-    return
-  }
-
-  isSubmitting.value = true
-  try {
-    await submitSupportRequest({ ...form })
-    submitSuccess.value = true
-    Object.assign(form, {
-      fullName: '',
-      email: '',
-      phone: '',
-      supportFor: '',
-      supportType: '',
-      preferredContact: '',
-      message: '',
-      consent: false,
-    })
-  } finally {
-    isSubmitting.value = false
-  }
-}
-</script>
-
 <template>
-  <div class="container-app">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-slate-900">
-        Request support
-      </h1>
-      <p class="mt-2 max-w-3xl text-lg text-slate-700">
-        Complete this form and we will contact you using your preferred method. Fields marked as required must be filled in.
-      </p>
-    </header>
+  <AppContainer>
+    <PageHeader
+      heading-id="request-support-heading"
+      title="Request support"
+      intro="Complete this form and we will contact you using your preferred method. Fields marked as required must be filled in."
+    />
 
     <StatusMessage
       v-if="submitSuccess"
@@ -239,9 +165,30 @@ async function handleSubmit() {
         </template>
       </FormField>
 
-      <button type="submit" class="btn-primary" :disabled="isSubmitting" :aria-busy="isSubmitting">
+      <AppButton
+        type="submit"
+        variant="primary"
+        :disabled="isSubmitting"
+        :aria-busy="isSubmitting"
+      >
         {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
-      </button>
+      </AppButton>
     </form>
-  </div>
+  </AppContainer>
 </template>
+
+<script setup lang="ts">
+import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
+
+const {
+  form,
+  errors,
+  isSubmitting,
+  submitSuccess,
+  errorSummaryRef,
+  supportForOptions,
+  contactOptions,
+  errorFor,
+  handleSubmit,
+} = useSupportRequestForm()
+</script>

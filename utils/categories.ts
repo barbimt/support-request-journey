@@ -1,4 +1,4 @@
-import type { ServiceCategory } from '~/types/service'
+import type { ServiceCategory } from '~/interfaces/service'
 
 export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
   housing: 'Housing',
@@ -16,6 +16,6 @@ export const ALL_CATEGORIES: ServiceCategory[] = [
   'care-leavers',
 ]
 
-export function getCategoryLabel(category: ServiceCategory): string {
+export const getCategoryLabel = (category: ServiceCategory): string => {
   return CATEGORY_LABELS[category]
 }

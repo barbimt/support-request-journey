@@ -1,18 +1,3 @@
-<script setup lang="ts">
-import type { ServiceCategory } from '~/types/service'
-import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
-
-defineProps<{
-  search: string
-  category: ServiceCategory | '' | 'all'
-}>()
-
-const emit = defineEmits<{
-  'update:search': [value: string]
-  'update:category': [value: ServiceCategory | '' | 'all']
-}>()
-</script>
-
 <template>
   <div class="grid gap-4 sm:grid-cols-2">
     <div>
@@ -44,3 +29,13 @@ const emit = defineEmits<{
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { ServiceCategory } from '~/interfaces/service'
+import type { ServiceFiltersEmits, ServiceFiltersProps } from '~/interfaces/components/ServiceFiltersProps'
+import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
+
+defineProps<ServiceFiltersProps>()
+
+const emit = defineEmits<ServiceFiltersEmits>()
+</script>

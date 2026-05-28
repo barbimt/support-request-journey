@@ -1,20 +1,3 @@
-<script setup lang="ts">
-const route = useRoute()
-
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Services', to: '/services' },
-  { label: 'Request support', to: '/request-support' },
-]
-
-function isCurrent(path: string): boolean {
-  if (path === '/') {
-    return route.path === '/'
-  }
-  return route.path === path || route.path.startsWith(`${path}/`)
-}
-</script>
-
 <template>
   <header class="border-b border-surface-border bg-surface-elevated">
     <div class="container-app flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -39,3 +22,20 @@ function isCurrent(path: string): boolean {
     </div>
   </header>
 </template>
+
+<script setup lang="ts">
+const route = useRoute()
+
+const navLinks = [
+  { label: 'Home', to: '/' },
+  { label: 'Services', to: '/services' },
+  { label: 'Request support', to: '/request-support' },
+] as const
+
+const isCurrent = (path: string): boolean => {
+  if (path === '/') {
+    return route.path === '/'
+  }
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
+</script>

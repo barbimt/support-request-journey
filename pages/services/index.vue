@@ -1,35 +1,10 @@
-<script setup lang="ts">
-import type { ServiceCategory } from '~/types/service'
-import type { Service } from '~/types/service'
-
-const { getServices, filterServices } = useServices()
-
-const search = ref('')
-const category = ref<ServiceCategory | '' | 'all'>('all')
-const services = ref<Service[]>([])
-
-onMounted(async () => {
-  services.value = await getServices()
-})
-
-const filteredServices = computed(() =>
-  filterServices(services.value, {
-    search: search.value,
-    category: category.value,
-  }),
-)
-</script>
-
 <template>
-  <div class="container-app">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-slate-900">
-        Support services
-      </h1>
-      <p class="mt-2 max-w-3xl text-lg text-slate-700">
-        Search and filter services to find support that matches your situation.
-      </p>
-    </header>
+  <AppContainer>
+    <PageHeader
+      heading-id="services-heading"
+      title="Support services"
+      intro="Search and filter services to find support that matches your situation."
+    />
 
     <ServiceFilters
       v-model:search="search"
@@ -44,8 +19,13 @@ const filteredServices = computed(() =>
         :service="service"
       />
     </div>
-    <p v-else class="text-lg text-slate-700">
-      No services match your search. Try a different keyword or category.
-    </p>
-  </div>
+    <EmptyState
+      v-else
+      message="No services match your search. Try a different keyword or category."
+    />
+  </AppContainer>
 </template>
+
+<script setup lang="ts">
+const { search, category, filteredServices } = useServiceList()
+</script>

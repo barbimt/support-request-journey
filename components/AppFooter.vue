@@ -1,10 +1,10 @@
 <template>
-  <footer class="mt-auto border-t border-surface-border bg-surface-muted">
-    <div class="container-app py-8">
-      <p class="text-base font-semibold text-slate-900">
+  <footer class="mt-auto border-t-2 border-surface-border bg-surface-muted">
+    <div class="container-app py-10">
+      <p class="text-lg font-bold text-content">
         Support Request Journey
       </p>
-      <p class="mt-2 text-sm text-slate-700">
+      <p class="mt-3 text-base text-content-secondary">
         &copy; 2026 Support Request Journey. All rights reserved.
       </p>
     </div>

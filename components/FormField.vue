@@ -23,7 +23,7 @@ const describedBy = computed(() => {
   <div class="form-field">
     <label :for="id" class="form-label">
       {{ label }}
-      <span v-if="required" class="text-red-800"> (required)</span>
+      <span v-if="required" class="font-semibold text-error-700"> (required)</span>
     </label>
     <p v-if="hint" :id="`${id}-hint`" class="form-hint">
       {{ hint }}

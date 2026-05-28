@@ -4,64 +4,97 @@
 
 @layer base {
   html {
-    @apply scroll-smooth;
+    @apply scroll-smooth bg-surface;
   }
 
   body {
-    @apply bg-surface text-slate-900 antialiased;
+    @apply bg-surface text-ink antialiased;
+    font-size: 1rem;
+    line-height: 1.6;
   }
 
+  /* Improved focus styles - highly visible with double ring */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-600;
+    @apply outline-none ring-2 ring-focus ring-offset-2 ring-offset-surface;
+  }
+
+  /* Ensure links have visible focus */
+  a:focus-visible {
+    @apply rounded-sm;
   }
 }
 
 @layer components {
   .container-app {
-    @apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8;
   }
 
+  /* Skip link - visible on focus with high contrast */
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface-elevated focus:px-4 focus:py-2 focus:shadow-lg focus:ring-2 focus:ring-primary-600;
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-3 focus:text-base focus:font-semibold focus:text-white focus:shadow-lg focus:ring-2 focus:ring-focus focus:ring-offset-2;
   }
 
+  /* Base button styles - minimum 44px touch target */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2.5 text-base font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-md px-5 py-3 text-base font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-primary {
-    @apply btn bg-primary-700 text-white hover:bg-primary-800 focus-visible:outline-primary-700;
+    @apply btn bg-primary-700 text-white hover:bg-primary-800 active:bg-primary-900;
   }
 
   .btn-secondary {
-    @apply btn border-2 border-primary-700 bg-surface-elevated text-primary-800 hover:bg-primary-50 focus-visible:outline-primary-700;
+    @apply btn border-2 border-primary-700 bg-surface-elevated text-primary-800 hover:bg-primary-50 active:bg-primary-100;
   }
 
+  /* Card with subtle shadow and clear border */
   .card {
     @apply rounded-lg border border-surface-border bg-surface-elevated p-6 shadow-sm;
   }
 
+  /* Form field container */
+  .form-field {
+    @apply space-y-1.5;
+  }
+
+  /* Form labels - clear and readable */
   .form-label {
-    @apply mb-1 block text-base font-medium text-slate-900;
+    @apply block text-base font-semibold text-ink;
   }
 
+  /* Form inputs - minimum 44px height, clear borders */
   .form-input {
-    @apply w-full rounded-md border border-slate-400 bg-white px-3 py-2 text-base text-slate-900;
+    @apply w-full min-h-[44px] rounded-md border-2 border-surface-border bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-muted transition-colors;
+    @apply hover:border-primary-400;
+    @apply focus:border-primary-600 focus:ring-2 focus:ring-primary-200 focus:ring-offset-0;
   }
 
+  /* Invalid form input state - clear visual indication */
   .form-input[aria-invalid='true'] {
-    @apply border-red-700 ring-1 ring-red-700;
+    @apply border-error-700 bg-error-50;
+    @apply focus:border-error-700 focus:ring-error-100;
   }
 
+  /* Form error message */
   .form-error {
-    @apply mt-1 text-sm font-medium text-red-800;
+    @apply mt-2 flex items-start gap-1.5 text-base font-medium text-error-700;
   }
 
+  .form-error::before {
+    content: '';
+    @apply mt-1 block h-4 w-4 shrink-0 rounded-full bg-error-700;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  /* Form hint text */
   .form-hint {
-    @apply mt-1 text-sm text-slate-600;
+    @apply text-base text-ink-secondary;
   }
 
+  /* Badge - category labels */
   .badge {
-    @apply inline-block rounded-full bg-primary-100 px-3 py-0.5 text-sm font-medium text-primary-900;
+    @apply inline-block rounded-full bg-primary-100 px-3 py-1 text-sm font-semibold text-primary-800;
   }
 }

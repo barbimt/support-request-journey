@@ -14,95 +14,85 @@ onMounted(async () => {
 
 <template>
   <div class="container-app">
-    <div v-if="service" class="max-w-3xl">
-      <p class="badge mb-5">
+    <div v-if="service">
+      <p class="badge mb-4">
         {{ getCategoryLabel(service.category) }}
       </p>
-      <h1 class="text-3xl font-bold leading-tight text-ink">
+      <h1 class="text-3xl font-bold text-slate-900">
         {{ service.title }}
       </h1>
 
-      <section class="mt-10" aria-labelledby="description-heading">
-        <h2 id="description-heading" class="text-xl font-bold text-ink">
+      <section class="mt-8" aria-labelledby="description-heading">
+        <h2 id="description-heading" class="text-2xl font-bold text-slate-900">
           Description
         </h2>
-        <p class="mt-3 text-base leading-relaxed text-ink-secondary">
+        <p class="mt-2 text-lg text-slate-700">
           {{ service.description }}
         </p>
       </section>
 
-      <section class="mt-10" aria-labelledby="eligibility-heading">
-        <h2 id="eligibility-heading" class="text-xl font-bold text-ink">
+      <section class="mt-8" aria-labelledby="eligibility-heading">
+        <h2 id="eligibility-heading" class="text-2xl font-bold text-slate-900">
           Eligibility
         </h2>
-        <p class="mt-3 text-base leading-relaxed text-ink-secondary">
+        <p class="mt-2 text-lg text-slate-700">
           {{ service.eligibility }}
         </p>
       </section>
 
-      <section class="mt-10" aria-labelledby="contact-heading">
-        <h2 id="contact-heading" class="text-xl font-bold text-ink">
+      <section class="mt-8" aria-labelledby="contact-heading">
+        <h2 id="contact-heading" class="text-2xl font-bold text-slate-900">
           Contact details
         </h2>
-        <ul class="mt-3 list-none space-y-3 text-base text-ink-secondary">
-          <li class="flex flex-wrap items-baseline gap-x-2">
-            <span class="font-semibold text-ink">Email:</span>
-            <a
-              :href="`mailto:${service.contactEmail}`"
-              class="text-primary-700 underline decoration-2 underline-offset-2 hover:text-primary-900 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-            >
-              {{ service.contactEmail }}
-            </a>
+        <ul class="mt-2 list-none space-y-2 text-lg text-slate-700">
+          <li>
+            <span class="font-semibold">Email:</span>
+            <a :href="`mailto:${service.contactEmail}`" class="ml-1 text-primary-800 underline">{{ service.contactEmail }}</a>
           </li>
-          <li class="flex flex-wrap items-baseline gap-x-2">
-            <span class="font-semibold text-ink">Phone:</span>
-            <a
-              :href="`tel:${service.phone.replace(/\s/g, '')}`"
-              class="text-primary-700 underline decoration-2 underline-offset-2 hover:text-primary-900 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-            >
-              {{ service.phone }}
-            </a>
+          <li>
+            <span class="font-semibold">Phone:</span>
+            <a :href="`tel:${service.phone.replace(/\s/g, '')}`" class="ml-1 text-primary-800 underline">{{ service.phone }}</a>
           </li>
-          <li class="flex flex-wrap items-baseline gap-x-2">
-            <span class="font-semibold text-ink">Online support:</span>
-            <span>{{ service.onlineSupport ? 'Available' : 'Not available' }}</span>
+          <li>
+            <span class="font-semibold">Online support:</span>
+            {{ service.onlineSupport ? 'Available' : 'Not available' }}
           </li>
         </ul>
       </section>
 
-      <section class="mt-10" aria-labelledby="hours-heading">
-        <h2 id="hours-heading" class="text-xl font-bold text-ink">
+      <section class="mt-8" aria-labelledby="hours-heading">
+        <h2 id="hours-heading" class="text-2xl font-bold text-slate-900">
           Opening hours
         </h2>
-        <p class="mt-3 text-base leading-relaxed text-ink-secondary">
+        <p class="mt-2 text-lg text-slate-700">
           {{ service.openingHours }}
         </p>
       </section>
 
-      <section class="mt-10" aria-labelledby="accessibility-heading">
-        <h2 id="accessibility-heading" class="text-xl font-bold text-ink">
+      <section class="mt-8" aria-labelledby="accessibility-heading">
+        <h2 id="accessibility-heading" class="text-2xl font-bold text-slate-900">
           Accessibility notes
         </h2>
-        <p class="mt-3 text-base leading-relaxed text-ink-secondary">
+        <p class="mt-2 text-lg text-slate-700">
           {{ service.accessibilityNotes }}
         </p>
       </section>
 
-      <p class="mt-12">
+      <p class="mt-10">
         <NuxtLink to="/request-support" class="btn-primary">
           Request support
         </NuxtLink>
       </p>
     </div>
 
-    <div v-else class="max-w-3xl">
-      <h1 class="text-3xl font-bold text-ink">
+    <div v-else>
+      <h1 class="text-3xl font-bold text-slate-900">
         Service not found
       </h1>
-      <p class="mt-4 text-lg text-ink-secondary">
+      <p class="mt-4 text-lg text-slate-700">
         We could not find a service with that reference.
       </p>
-      <p class="mt-8">
+      <p class="mt-6">
         <NuxtLink to="/services" class="btn-secondary">
           Back to services
         </NuxtLink>

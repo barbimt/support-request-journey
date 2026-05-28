@@ -8,25 +8,22 @@ defineProps<{
 </script>
 
 <template>
-  <article class="card flex h-full flex-col transition-shadow hover:shadow-md">
-    <p class="badge mb-4">
+  <article class="card flex h-full flex-col">
+    <p class="badge mb-3">
       {{ getCategoryLabel(service.category) }}
     </p>
-    <h2 class="text-xl font-bold text-content">
+    <h2 class="text-xl font-bold text-slate-900">
       {{ service.title }}
     </h2>
-    <p class="mt-3 flex-1 text-base leading-relaxed text-content-secondary">
+    <p class="mt-3 flex-1 text-slate-700">
       {{ service.description }}
     </p>
-    <p class="mt-5">
+    <p class="mt-4">
       <NuxtLink
         :to="`/services/${service.id}`"
-        class="inline-flex items-center gap-1 text-base font-semibold text-primary-700 underline decoration-2 underline-offset-2 transition-colors hover:text-primary-900 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        class="font-semibold text-primary-800 underline decoration-primary-600 underline-offset-2 hover:text-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
       >
         View service details<span class="sr-only"> for {{ service.title }}</span>
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
       </NuxtLink>
     </p>
   </article>

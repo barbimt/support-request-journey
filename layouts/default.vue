@@ -1,8 +1,8 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-surface">
+  <div class="flex min-h-screen flex-col">
     <SkipLink />
     <AppHeader />
-    <main id="main-content" tabindex="-1" class="flex-1 py-10 sm:py-12">
+    <main id="main-content" tabindex="-1" class="flex-1 py-8">
       <slot />
     </main>
     <AppFooter />

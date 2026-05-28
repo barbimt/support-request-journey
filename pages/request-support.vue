@@ -71,22 +71,22 @@ async function handleSubmit() {
 
 <template>
   <div class="container-app">
-    <header class="mb-10">
-      <h1 class="text-3xl font-bold leading-tight text-ink">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-900">
         Request support
       </h1>
-      <p class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-secondary">
+      <p class="mt-2 max-w-3xl text-lg text-slate-700">
         Complete this form and we will contact you using your preferred method. Fields marked as required must be filled in.
       </p>
     </header>
 
     <StatusMessage
       v-if="submitSuccess"
-      class="mb-8"
+      class="mb-6"
       message="Your support request has been sent. We will contact you soon."
     />
 
-    <form novalidate class="max-w-2xl space-y-8" @submit.prevent="handleSubmit">
+    <form novalidate class="max-w-2xl space-y-6" @submit.prevent="handleSubmit">
       <ErrorSummary
         v-if="errors.length"
         ref="errorSummaryRef"
@@ -180,30 +180,30 @@ async function handleSubmit() {
 
       <fieldset
         id="preferredContact"
-        class="rounded-lg border-2 border-surface-border bg-surface-elevated p-5"
+        class="rounded-md border border-surface-border p-4"
         :aria-describedby="errorFor('preferredContact') ? 'preferredContact-error' : undefined"
         :aria-invalid="errorFor('preferredContact') ? 'true' : undefined"
       >
-        <legend class="form-label px-2">
-          Preferred contact method <span class="font-semibold text-error-700">(required)</span>
+        <legend class="form-label px-1">
+          Preferred contact method <span class="text-red-800">(required)</span>
         </legend>
-        <div class="mt-3 space-y-3">
+        <div class="space-y-2">
           <label
             v-for="option in contactOptions"
             :key="option.value"
-            class="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-base text-ink transition-colors hover:bg-surface-muted"
+            class="flex items-center gap-2 text-base text-slate-900"
           >
             <input
               v-model="form.preferredContact"
               type="radio"
               name="preferredContact"
-              class="h-5 w-5 border-2 border-surface-border text-primary-700 focus:ring-2 focus:ring-focus focus:ring-offset-2"
+              class="h-4 w-4 border-slate-500 text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
               :value="option.value"
             >
             {{ option.label }}
           </label>
         </div>
-        <p v-if="errorFor('preferredContact')" id="preferredContact-error" class="form-error mt-3">
+        <p v-if="errorFor('preferredContact')" id="preferredContact-error" class="form-error">
           {{ errorFor('preferredContact') }}
         </p>
       </fieldset>
@@ -223,27 +223,25 @@ async function handleSubmit() {
 
       <FormField id="consent" label="Consent" :error="errorFor('consent')" required>
         <template #default="{ describedBy, invalid }">
-          <div class="flex min-h-[44px] items-start gap-3 rounded-md bg-surface-muted p-4">
+          <div class="flex items-start gap-2">
             <input
               id="consent"
               v-model="form.consent"
               type="checkbox"
-              class="mt-0.5 h-5 w-5 rounded border-2 border-surface-border text-primary-700 focus:ring-2 focus:ring-focus focus:ring-offset-2"
+              class="mt-1 h-4 w-4 rounded border-slate-500 text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
               :aria-describedby="describedBy"
               :aria-invalid="invalid"
             >
-            <label for="consent" class="text-base leading-relaxed text-ink">
+            <label for="consent" class="text-base text-slate-900">
               I agree that my details can be used to respond to this request.
             </label>
           </div>
         </template>
       </FormField>
 
-      <div class="pt-4">
-        <button type="submit" class="btn-primary" :disabled="isSubmitting" :aria-busy="isSubmitting">
-          {{ isSubmitting ? 'Sending request...' : 'Send support request' }}
-        </button>
-      </div>
+      <button type="submit" class="btn-primary" :disabled="isSubmitting" :aria-busy="isSubmitting">
+        {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
+      </button>
     </form>
   </div>
 </template>

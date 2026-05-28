@@ -22,11 +22,11 @@ const filteredServices = computed(() =>
 
 <template>
   <div class="container-app">
-    <header class="mb-10">
-      <h1 class="text-3xl font-bold leading-tight text-ink">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-900">
         Support services
       </h1>
-      <p class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-secondary">
+      <p class="mt-2 max-w-3xl text-lg text-slate-700">
         Search and filter services to find support that matches your situation.
       </p>
     </header>
@@ -34,7 +34,7 @@ const filteredServices = computed(() =>
     <ServiceFilters
       v-model:search="search"
       v-model:category="category"
-      class="mb-10"
+      class="mb-8"
     />
 
     <div v-if="filteredServices.length" class="grid gap-6 sm:grid-cols-2">
@@ -44,10 +44,8 @@ const filteredServices = computed(() =>
         :service="service"
       />
     </div>
-    <div v-else class="rounded-lg border-2 border-surface-border bg-surface-elevated p-6 text-center">
-      <p class="text-lg text-ink-secondary">
-        No services match your search. Try a different keyword or category.
-      </p>
-    </div>
+    <p v-else class="text-lg text-slate-700">
+      No services match your search. Try a different keyword or category.
+    </p>
   </div>
 </template>

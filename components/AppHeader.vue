@@ -16,23 +16,19 @@ function isCurrent(path: string): boolean {
 </script>
 
 <template>
-  <header class="border-b-2 border-surface-border bg-surface-elevated">
-    <div class="container-app flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-xl font-bold text-content">
-        <NuxtLink
-          to="/"
-          class="rounded-sm transition-colors hover:text-primary-700 focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-        >
+  <header class="border-b border-surface-border bg-surface-elevated">
+    <div class="container-app flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-lg font-bold text-primary-900">
+        <NuxtLink to="/" class="rounded hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
           Support Request Journey
         </NuxtLink>
       </p>
       <nav aria-label="Main">
-        <ul class="flex flex-wrap gap-1 sm:gap-2">
+        <ul class="flex flex-wrap gap-2 sm:gap-4">
           <li v-for="link in navLinks" :key="link.to">
             <NuxtLink
               :to="link.to"
-              class="inline-flex min-h-[44px] items-center rounded-md px-3 py-2 text-base font-semibold text-content transition-colors hover:bg-primary-50 hover:text-primary-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-              :class="isCurrent(link.to) ? 'bg-primary-100 text-primary-900' : ''"
+              class="rounded px-2 py-1 font-medium text-slate-800 hover:bg-primary-50 hover:text-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
               :aria-current="isCurrent(link.to) ? 'page' : undefined"
             >
               {{ link.label }}

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('create service from manage page', async ({ page }) => {
   await page.goto('/services')
 
-  await page.getByRole('link', { name: 'Manage services' }).click()
+  await page.getByRole('link', { name: 'Add a service to the directory' }).click()
   await expect(page).toHaveURL('/manage/services')
 
   await page.getByRole('button', { name: 'Create service' }).click()

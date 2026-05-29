@@ -14,9 +14,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
+      - run: npm install -g npm@11
       - run: npm ci
       - run: npm run test
       - run: npm run build
@@ -85,9 +86,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
+      - run: npm install -g npm@11
       - run: npm ci
 
       - uses: ruby/setup-ruby@v1

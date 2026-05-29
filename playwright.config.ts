@@ -24,9 +24,12 @@ export default defineConfig({
       url: 'http://localhost:3001/up',
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
-      env: {
-        PATH: '/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:/opt/homebrew/opt/postgresql@16/bin:/usr/bin:/bin',
-      },
+      env:
+        process.platform === 'darwin'
+          ? {
+              PATH: '/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:/opt/homebrew/opt/postgresql@16/bin:/usr/bin:/bin',
+            }
+          : {},
     },
     {
       command: 'npm run build && npm run preview -- --port 3000',

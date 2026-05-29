@@ -184,6 +184,14 @@ Requires PostgreSQL and the `backend_test` database (created automatically by `d
 
 **Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server instead of a production preview and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
 
+## Continuous integration
+
+[GitHub Actions](.github/workflows/ci.yml) runs on pull requests and pushes to `main`:
+
+- **Frontend** — Vitest unit tests and production build
+- **Backend** — Rails tests with PostgreSQL
+- **E2E** — Playwright full-stack tests (user journey and axe accessibility checks)
+
 ## Accessibility checks
 
 The app uses semantic HTML, visible focus states, accessible forms, error summaries, field-level errors, `aria-describedby`, `aria-invalid` and `aria-live`.

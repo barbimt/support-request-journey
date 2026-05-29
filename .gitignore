@@ -30,3 +30,4 @@ docs/
 # Test outputs
 test-results
 playwright-report
+reports

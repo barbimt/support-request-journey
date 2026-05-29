@@ -145,6 +145,66 @@ npm run build         # production build
 npm run test:e2e      # Playwright (starts Rails + preview)
 ```
 
+## Accessibility checks
+
+The app uses semantic HTML, visible focus states, accessible forms, error summaries, field-level errors, `aria-describedby`, `aria-invalid` and `aria-live`.
+
+Automated tools are helpful, but they do not replace manual testing. Accessibility still needs keyboard testing, screen reader checks and human judgement.
+
+### Automated checks
+
+**Nuxt Accessibility (`@nuxt/a11y`)**
+
+During development, start the app with `npm run dev`, open [http://localhost:3000](http://localhost:3000), then open **Nuxt DevTools** and click the **Nuxt a11y** tab. The module scans pages as you navigate and shows axe-core violations in the DevTools panel. It runs in development only and does not fail production builds.
+
+**Playwright + axe**
+
+Run automated accessibility scans against the main routes:
+
+```bash
+npm run test:a11y
+# or explicitly:
+npm run test:a11y:axe
+```
+
+This starts Rails and a production preview, then scans `/`, `/services`, `/request-support` and `/manage/services` with axe-core in both light and dark mode.
+
+**Pa11y**
+
+Run command-line WCAG checks against a running local app (start `npm run dev` or `npm run preview` first):
+
+```bash
+npm run test:a11y:pa11y
+```
+
+Pa11y reads URLs from `.pa11yci` and prints results in the terminal.
+
+### Manual review tools
+
+These are useful alongside automated checks:
+
+- **axe DevTools** — browser extension for quick manual scans and element inspection
+- **Lighthouse** — built into Chrome DevTools for a fast accessibility audit
+- **WAVE** — browser extension for visual review of contrast, headings, labels and structure
+- **Accessibility Insights** — guided manual checks (keyboard, focus order, contrast)
+- **Browser DevTools accessibility tree** — inspect accessible names, roles and how the page structure is exposed
+- **Storybook accessibility addon** — useful for projects that use Storybook (this project does not use Storybook)
+
+### Manual checklist
+
+- Navigate the whole app using only the keyboard.
+- Check focus is always visible.
+- Check heading order.
+- Check labels on all form controls.
+- Check the error summary links to invalid fields.
+- Check field-level errors are announced correctly.
+- Check success messages use `aria-live`.
+- Check errors and success states do not rely only on colour.
+- Check colour contrast in light and dark mode.
+- Check the support request form on mobile width.
+- Check the manage services form on mobile width.
+- Check the theme toggle with keyboard.
+
 ## Project structure
 
 ```

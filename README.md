@@ -186,13 +186,77 @@ Requires PostgreSQL and the `backend_test` database (created automatically by `d
 
 ## Continuous integration
 
-GitHub Actions runs on every pull request and push to `main` (see `.github/workflows/ci.yml`).
+This project uses **GitHub Actions** to run automated checks on every **pull request to `main`** and every **push to `main`**. The workflow lives at [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
-- **Frontend** — `npm ci`, Vitest unit tests, and a production Nuxt build.
-- **Backend** — Bundler install, PostgreSQL 16, `db:test:prepare`, and Rails Minitest.
-- **E2E** — Playwright against a production preview and the Rails API (main user journey, manage-services flow, keyboard navigation, and axe accessibility scans in `accessibility.spec.ts`).
+### What was added
 
-Backend jobs use PostgreSQL in CI with `RAILS_ENV=test` and a test database URL; the E2E job starts Rails and Nuxt via the Playwright `webServer` config.
+A single workflow named **CI** with three jobs that mirror how the app runs locally: Nuxt frontend, Rails API, and full-stack browser tests. There is no deployment step, no secrets, and no paid third-party services—only GitHub-hosted runners, PostgreSQL as a service container, and open-source tooling already used in the repo.
+
+### How the jobs fit together
+
+```text
+pull_request / push to main
+        │
+        ├─► frontend (parallel)
+        │     npm ci → unit tests → production build
+        │
+        ├─► backend (parallel)
+        │     Ruby + PostgreSQL → db:test:prepare → Minitest
+        │
+        └─► e2e (after frontend + backend pass)
+              npm ci + Ruby + PostgreSQL + Playwright (Chromium)
+              → npm run test:e2e (Rails + Nuxt preview + browser tests)
+```
+
+**Frontend** validates the Nuxt app in isolation:
+
+- Installs dependencies with `npm ci` (Node 22, npm cache enabled).
+- Runs `npm run test` (Vitest unit tests).
+- Runs `npm run build` (production build must succeed).
+
+**Backend** validates the Rails API against a real database:
+
+- Uses Ruby **4.0.5** from `backend/.ruby-version` via `ruby/setup-ruby` with Bundler cache.
+- Starts **PostgreSQL 16** as a GitHub Actions service container.
+- Sets `RAILS_ENV=test` and `DATABASE_URL=postgres://postgres:postgres@localhost:5432/support_request_journey_test`.
+- Runs `bin/rails db:test:prepare test` (17 Minitest tests for models and API endpoints).
+
+**E2E** validates the full stack in a browser, only if frontend and backend jobs succeed:
+
+- Reuses the same PostgreSQL setup so Rails can persist data during tests.
+- Sets `CI=true` and `NUXT_API_BASE=http://localhost:3001/api`.
+- Installs **Chromium only** (`npx playwright install --with-deps chromium`) to keep runs fast.
+- Runs `npm run test:e2e`, which uses Playwright’s `webServer` config in `playwright.config.ts` to:
+  - start Rails on port **3001** (`db:prepare`, seed, then `bin/rails server`);
+  - build Nuxt and start **preview** on port **3000**;
+  - run all Playwright specs (user journey, manage services, keyboard navigation, and **axe** accessibility scans in `accessibility.spec.ts`).
+
+Accessibility is covered inside `npm run test:e2e`; `npm run test:a11y` is not run separately in CI because it targets the same axe tests and would duplicate work.
+
+### Design choices (useful when explaining the PR)
+
+| Choice | Reason |
+|--------|--------|
+| Three jobs instead of one monolith | Faster feedback: frontend and backend run in parallel; E2E only runs when both pass. |
+| `npm ci` | Reproducible installs from `package-lock.json` on CI runners. |
+| PostgreSQL service container | Matches production stack; Rails tests and E2E need a real DB. |
+| Playwright `webServer` | Reuses existing local dev flow; no custom shell scripts to start/stop servers in the workflow. |
+| Chromium only | Enough for this project; avoids installing Firefox/WebKit on every run. |
+| No deployment / secrets | CI scope is **verify**, not **release**—keeps the workflow simple and safe for forks. |
+| `playwright.config.ts` PATH on macOS only | Homebrew Ruby paths apply locally on Darwin; Linux CI uses `ruby/setup-ruby` and does not need them. |
+
+The Rails app also has its own workflow under `backend/.github/workflows/ci.yml` (Brakeman, RuboCop, etc.). The root workflow focuses on **integration** with the Nuxt frontend and Playwright suite.
+
+### Run the same checks locally
+
+From the project root:
+
+```bash
+npm run test          # unit tests
+npm run build         # production build
+npm run test:backend  # Rails Minitest (PostgreSQL required)
+CI=1 npm run test:e2e # full Playwright suite (clean servers; stop dev on 3000/3001 first)
+```
 
 ## Accessibility checks
 

@@ -167,7 +167,7 @@ npm run test:a11y
 npm run test:a11y:axe
 ```
 
-This starts Rails and a production preview, then scans `/`, `/services`, `/request-support` and `/manage/services` with axe-core.
+This starts Rails and a production preview, then scans `/`, `/services`, `/request-support` and `/manage/services` with axe-core in both light and dark mode.
 
 **Pa11y**
 

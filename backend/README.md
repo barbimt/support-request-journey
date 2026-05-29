@@ -6,7 +6,7 @@ The browser never calls this API directly. **Nuxt** server routes proxy requests
 
 ## Stack
 
-- **Ruby** 4.0.5 (see `.ruby-version`)
+- **Ruby** 3.4+ on Render (see `.ruby-version`); 4.0+ works locally
 - **Rails** 8.1 (API mode)
 - **PostgreSQL** 16+
 - **Puma**

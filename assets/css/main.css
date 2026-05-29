@@ -100,6 +100,10 @@
     @apply space-y-2;
   }
 
+  .form-page {
+    @apply mx-auto w-full max-w-2xl;
+  }
+
   .form-label {
     @apply block text-base font-semibold leading-normal text-slate-950 dark:text-slate-50;
   }

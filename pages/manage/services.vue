@@ -1,29 +1,30 @@
 <template>
   <AppContainer>
-    <PageHeader
-      heading-id="manage-services-heading"
-      title="Manage services"
-      intro="Add a new support service to the directory. Fields marked as required must be filled in."
-    />
+    <div class="form-page">
+      <PageHeader
+        heading-id="manage-services-heading"
+        title="Manage services"
+        intro="Add a new support service to the directory. Fields marked as required must be filled in."
+      />
 
-    <StatusMessage
-      v-if="submitSuccess"
-      class="mb-8"
-      :message="successMessage || 'The service has been created successfully.'"
-    />
+      <StatusMessage
+        v-if="submitSuccess"
+        class="mb-8"
+        :message="successMessage || 'The service has been created successfully.'"
+      />
 
-    <div
-      v-if="serverError"
-      class="alert-error mb-8"
-      role="alert"
-      tabindex="-1"
-    >
-      <p class="text-base font-semibold leading-relaxed sm:text-lg">
-        {{ serverError }}
-      </p>
-    </div>
+      <div
+        v-if="serverError"
+        class="alert-error mb-8"
+        role="alert"
+        tabindex="-1"
+      >
+        <p class="text-base font-semibold leading-relaxed sm:text-lg">
+          {{ serverError }}
+        </p>
+      </div>
 
-    <form novalidate class="max-w-2xl space-y-8" @submit.prevent="handleSubmit">
+      <form novalidate class="space-y-8" @submit.prevent="handleSubmit">
       <ErrorSummary
         v-if="errors.length"
         ref="errorSummaryRef"
@@ -190,32 +191,33 @@
           {{ isSubmitting ? 'Creating service…' : 'Create service' }}
         </AppButton>
       </div>
-    </form>
+      </form>
 
-    <section v-if="existingServices.length" class="theme-divider mt-12 max-w-2xl border-t pt-10">
-      <h2 class="text-xl font-bold sm:text-2xl">
-        Existing services
-      </h2>
-      <p class="body-text mt-2">
-        {{ existingServices.length }} {{ existingServices.length === 1 ? 'service' : 'services' }} currently listed.
+      <section v-if="existingServices.length" class="theme-divider mt-12 border-t pt-10">
+        <h2 class="text-xl font-bold sm:text-2xl">
+          Existing services
+        </h2>
+        <p class="body-text mt-2">
+          {{ existingServices.length }} {{ existingServices.length === 1 ? 'service' : 'services' }} currently listed.
+        </p>
+        <ul class="mt-6 space-y-3">
+          <li v-for="service in existingServices" :key="service.id">
+            <NuxtLink
+              :to="`/services/${service.id}`"
+              class="flex flex-wrap items-baseline justify-between gap-2 rounded-lg border border-stone-200 bg-white px-4 py-3 no-underline transition-colors hover:border-emerald-700/40 hover:bg-stone-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-emerald-500/40 dark:hover:bg-stone-800 dark:focus-visible:outline-amber-300"
+            >
+              <span class="font-medium text-slate-950 dark:text-slate-50">{{ service.title }}</span>
+              <CategoryBadge :category="service.category" />
+              <span class="sr-only">View details for {{ service.title }}</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </section>
+
+      <p v-else-if="!isLoadingServices" class="body-text theme-divider mt-12 border-t pt-10">
+        No services listed yet.
       </p>
-      <ul class="mt-6 space-y-3">
-        <li v-for="service in existingServices" :key="service.id">
-          <NuxtLink
-            :to="`/services/${service.id}`"
-            class="flex flex-wrap items-baseline justify-between gap-2 rounded-lg border border-stone-200 bg-white px-4 py-3 no-underline transition-colors hover:border-emerald-700/40 hover:bg-stone-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-emerald-500/40 dark:hover:bg-stone-800 dark:focus-visible:outline-amber-300"
-          >
-            <span class="font-medium text-slate-950 dark:text-slate-50">{{ service.title }}</span>
-            <CategoryBadge :category="service.category" />
-            <span class="sr-only">View details for {{ service.title }}</span>
-          </NuxtLink>
-        </li>
-      </ul>
-    </section>
-
-    <p v-else-if="!isLoadingServices" class="body-text theme-divider mt-12 max-w-2xl border-t pt-10">
-      No services listed yet.
-    </p>
+    </div>
   </AppContainer>
 </template>
 

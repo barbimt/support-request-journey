@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "test": "vitest run",
     "test:unit": "vitest run",
+    "test:backend": "cd backend && bin/rails db:test:prepare test",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test tests/e2e/accessibility.spec.ts",
     "test:a11y:axe": "playwright test tests/e2e/accessibility.spec.ts",

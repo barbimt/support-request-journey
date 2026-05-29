@@ -8,8 +8,10 @@ An accessible web app for browsing local support services and submitting support
 - View service details (eligibility, contact, opening hours, accessibility)
 - Create new support services at `/manage/services` (accessible form, client and server validation)
 - Submit a support request through an accessible form (client and server validation)
-- Light / dark theme toggle
-- Unit tests (Vitest) and end-to-end tests (Playwright)
+- Light / dark theme toggle (icon-only on small screens, with an accessible name)
+- Responsive header with a mobile navigation menu (keyboard and screen-reader friendly)
+- Skip link to jump straight to the main content
+- Unit tests (Vitest) and end-to-end tests (Playwright), including automated accessibility scans
 
 ## Architecture
 
@@ -137,19 +139,63 @@ curl -X POST http://localhost:3001/api/services \
 
 ## Testing
 
-From the project root (Rails should be running for e2e):
+From the project root:
 
 ```bash
-npm run test          # unit tests
+npm run test          # unit tests (Vitest)
+npm run test:backend  # Rails API tests (Minitest; needs PostgreSQL)
 npm run build         # production build
-npm run test:e2e      # Playwright (starts Rails + preview)
+npm run test:e2e      # all Playwright tests (starts Rails + preview)
 ```
+
+**Backend (Rails + Minitest)**
+
+From the project root:
+
+```bash
+npm run test:backend
+```
+
+Or from `backend/`:
+
+```bash
+bin/rails db:test:prepare test
+```
+
+This runs **17 tests** covering:
+
+| Layer | File | What it covers |
+|-------|------|----------------|
+| Models | `test/models/service_test.rb` | Validations, associations |
+| Models | `test/models/support_request_test.rb` | Validations, default status, reference format, consent |
+| API | `test/controllers/api/services_controller_test.rb` | `GET /api/services`, `GET /api/services/:id`, `POST /api/services` (201/422/404) |
+| API | `test/controllers/api/support_requests_controller_test.rb` | `POST /api/support_requests` (201/422) |
+
+Requires PostgreSQL and the `backend_test` database (created automatically by `db:test:prepare`).
+
+**Frontend e2e (Playwright)**
+
+| File | What it covers |
+|------|----------------|
+| `tests/e2e/journey.spec.ts` | Full user journey from home to support request success |
+| `tests/e2e/manage-services.spec.ts` | Create service flow and validation |
+| `tests/e2e/accessibility.spec.ts` | axe-core WCAG scans (18 tests) |
+| `tests/e2e/keyboard-navigation.spec.ts` | Skip link and mobile menu keyboard behaviour (3 tests) |
+
+**Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server instead of a production preview and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
 
 ## Accessibility checks
 
 The app uses semantic HTML, visible focus states, accessible forms, error summaries, field-level errors, `aria-describedby`, `aria-invalid` and `aria-live`.
 
-Automated tools are helpful, but they do not replace manual testing. Accessibility still needs keyboard testing, screen reader checks and human judgement.
+Navigation and layout:
+
+- **Skip link** — first focusable control; moves focus to `#main-content`
+- **Desktop nav** — horizontal links in the header from `640px` width up
+- **Mobile nav** — hamburger button with `aria-expanded`, `aria-controls`, and `aria-label` (`Open menu` / `Close menu`); menu closes on Escape, route change, or link selection; focus moves to the first link when opened and returns to the toggle when closed; Tab wraps from the last link to the first
+- **Theme toggle** — shows icon + text label on desktop; icon-only on mobile with `aria-label` (`Switch to light mode` / `Switch to dark mode`)
+
+Automated tools are helpful, but they do not replace manual testing. Accessibility still needs screen reader checks and human judgement.
 
 ### Automated checks
 
@@ -167,17 +213,34 @@ npm run test:a11y
 npm run test:a11y:axe
 ```
 
-This starts Rails and a production preview, then scans `/`, `/services`, `/request-support` and `/manage/services` with axe-core in both light and dark mode.
+This starts Rails and a production preview, then scans these routes with axe-core against WCAG 2.0/2.1 A and AA:
+
+- `/`, `/services`, `/request-support`, `/manage/services`
+- **Light and dark mode**
+- **Desktop and mobile** (iPhone 13 viewport)
+- **Mobile menu open** on the home page
+
+That is **18 axe tests** in `tests/e2e/accessibility.spec.ts`.
+
+**Keyboard navigation (Playwright)**
+
+Automated keyboard checks for the skip link and mobile menu:
+
+```bash
+npx playwright test tests/e2e/keyboard-navigation.spec.ts
+```
+
+These run as part of `npm run test:e2e` as well.
 
 **Pa11y**
 
-Run command-line WCAG checks against a running local app (start `npm run dev` or `npm run preview` first):
+Run command-line WCAG 2.0 AA checks against a **running local app** (start `npm run dev` or `npm run preview` first):
 
 ```bash
 npm run test:a11y:pa11y
 ```
 
-Pa11y reads URLs from `.pa11yci` and prints results in the terminal.
+Pa11y reads URLs from `.pa11yci` (localhost only) and prints results in the terminal. This is a local/CI check — it does not affect production deploys. To scan a deployed site you would change the URLs in `.pa11yci` manually; only `NUXT_API_BASE` needs to change for a normal deploy.
 
 ### Manual review tools
 
@@ -203,7 +266,9 @@ These are useful alongside automated checks:
 - Check colour contrast in light and dark mode.
 - Check the support request form on mobile width.
 - Check the manage services form on mobile width.
-- Check the theme toggle with keyboard.
+- Open and close the mobile menu with keyboard only (Space/Enter, Escape, Tab wrap).
+- Check the theme toggle with keyboard and that it has a clear accessible name on mobile.
+- Use the skip link and confirm focus lands on the main content.
 
 ## Project structure
 
@@ -211,12 +276,14 @@ These are useful alongside automated checks:
 ├── backend/              # Rails API
 │   ├── app/models/       # Service, SupportRequest
 │   ├── app/controllers/api/
+│   ├── test/             # Minitest (models + API)
 │   ├── db/migrate/       # PostgreSQL schema
 │   └── db/seeds.rb       # Sample services
 ├── components/           # Vue UI components
 ├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
 ├── server/api/           # Nuxt proxy routes
+├── tests/e2e/            # Playwright (journey, manage-services, accessibility, keyboard)
 └── utils/                # Validation, API mappers
 ```
 

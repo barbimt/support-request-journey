@@ -1,0 +1,21 @@
+family_support:
+  title: Family support
+  category: family
+  description: Practical and emotional support for families.
+  eligibility: Families with children under 18.
+  contact_email: family.support@example-council.gov.uk
+  phone: "0800 234 5678"
+  opening_hours: Monday to Friday, 9am to 5pm
+  accessibility_notes: Home visits can be arranged.
+  online_support: true
+
+housing_advice:
+  title: Housing advice
+  category: housing
+  description: Free guidance on renting and housing rights.
+  eligibility: Open to residents aged 16 and over.
+  contact_email: housing.advice@example-council.gov.uk
+  phone: "0800 123 4567"
+  opening_hours: Monday to Friday, 9am to 5pm
+  accessibility_notes: Step-free access at reception.
+  online_support: true

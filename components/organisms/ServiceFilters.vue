@@ -1,5 +1,5 @@
 <template>
-  <section aria-labelledby="service-filters-heading" class="card-panel mb-8 sm:mb-10">
+  <section aria-labelledby="service-filters-heading" class="card-panel mb-8 overflow-visible sm:mb-10">
     <h2 id="service-filters-heading" class="sr-only">
       Filter support services
     </h2>

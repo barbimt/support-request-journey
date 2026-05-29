@@ -6,6 +6,7 @@ An accessible web app for browsing local support services and submitting support
 
 - Browse and filter support services by category and search
 - View service details (eligibility, contact, opening hours, accessibility)
+- Create new support services at `/manage/services` (accessible form, client and server validation)
 - Submit a support request through an accessible form (client and server validation)
 - Light / dark theme toggle
 - Unit tests (Vitest) and end-to-end tests (Playwright)
@@ -33,6 +34,7 @@ Frontend endpoints (use these from the app, not Rails directly):
 
 - `GET /api/services`
 - `GET /api/services/:id`
+- `POST /api/services`
 - `POST /api/support-requests`
 
 ## Tech stack
@@ -108,12 +110,29 @@ Base URL in development: `http://localhost:3001/api`
 |--------|------|-------------|
 | GET | `/services` | List all services (ordered by title) |
 | GET | `/services/:id` | One service, or 404 |
+| POST | `/services` | Create a service (201 + JSON, or 422 with validation errors) |
 | POST | `/support_requests` | Create a support request (`status: "new"`, reference e.g. `SR-0001`) |
 
 Example:
 
 ```bash
 curl http://localhost:3001/api/services
+
+curl -X POST http://localhost:3001/api/services \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service": {
+      "title": "Digital skills café for older residents",
+      "category": "family",
+      "description": "Weekly sessions with volunteer helpers for older adults learning to use smartphones.",
+      "eligibility": "Residents aged 60 and over.",
+      "contact_email": "digital.cafe@example-council.gov.uk",
+      "phone": "020 7946 0958",
+      "opening_hours": "Every Wednesday, 1pm to 4pm",
+      "accessibility_notes": "Large-print handouts and seated one-to-one support.",
+      "online_support": false
+    }
+  }'
 ```
 
 ## Testing
@@ -195,12 +214,10 @@ These are useful alongside automated checks:
 │   ├── db/migrate/       # PostgreSQL schema
 │   └── db/seeds.rb       # Sample services
 ├── components/           # Vue UI components
-├── composables/          # useServices, useSupportRequest, etc.
-├── pages/                # Routes (services, request-support)
+├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
+├── pages/                # Routes (services, manage/services, request-support)
 ├── server/api/           # Nuxt proxy routes
 └── utils/                # Validation, API mappers
 ```
 
-## Out of scope
-
-This project does not include authentication, an admin panel, CMS, email delivery, i18n, background queues, or file uploads.
+For a full backend walkthrough and copy-paste test commands, see the guides in `docs/` (`backend-guide.md`, `testing-cookbook.md`).

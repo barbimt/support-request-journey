@@ -73,14 +73,12 @@
 </template>
 
 <script setup lang="ts">
-import type { Service } from '~/interfaces/service'
-
 const route = useRoute()
 const { getServiceById } = useServices()
 
-const service = ref<Service | null>(null)
-
-onMounted(async () => {
-  service.value = await getServiceById(String(route.params.id))
-})
+const { data: service } = await useAsyncData(
+  () => `service-${route.params.id}`,
+  () => getServiceById(String(route.params.id)),
+  { default: () => null },
+)
 </script>

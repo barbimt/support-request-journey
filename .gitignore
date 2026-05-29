@@ -25,6 +25,7 @@ logs
 
 # Local learning docs (not committed)
 .local-docs/
+docs/
 
 # Test outputs
 test-results

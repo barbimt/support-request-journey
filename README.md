@@ -2,6 +2,8 @@
 
 An accessible web app for browsing local support services and submitting support requests. Built with **Nuxt 3** on the frontend and a **Ruby on Rails API** backed by **PostgreSQL**.
 
+**Live app:** [support-request-journey.vercel.app](https://support-request-journey.vercel.app)
+
 ## Features
 
 - Browse and filter support services by category and search
@@ -15,14 +17,26 @@ An accessible web app for browsing local support services and submitting support
 
 ## Architecture
 
-The browser only talks to the Nuxt app. Nuxt server routes proxy requests to the Rails API.
+The browser only talks to the Nuxt app. Nuxt server routes proxy requests to the Rails API using private runtime config (`NUXT_API_BASE`).
+
+**Local development:**
 
 ```
 Browser
-  → Nuxt (pages, composables)
+  → Nuxt (localhost:3000)
   → Nuxt server routes (/api/*)
-  → Rails API (port 3001)
+  → Rails API (localhost:3001)
   → PostgreSQL
+```
+
+**Production:**
+
+```
+Browser
+  → Nuxt on Vercel
+  → Nuxt server routes (/api/*)
+  → Rails API on Render
+  → PostgreSQL on Render
 ```
 
 | Layer | Role |
@@ -55,7 +69,7 @@ Frontend endpoints (use these from the app, not Rails directly):
 ## Prerequisites
 
 - **Node.js** 18+ and npm
-- **Ruby** 4.0+ (see `backend/.ruby-version`)
+- **Ruby** 3.4+ (see `backend/.ruby-version`; Ruby 4.0+ works locally on macOS)
 - **PostgreSQL** 16+
 
 On macOS with Homebrew:
@@ -102,7 +116,18 @@ Open [http://localhost:3000](http://localhost:3000)
 |----------|---------|-------------|
 | `NUXT_API_BASE` | `http://localhost:3001/api` | Rails API base URL (server-only, not exposed to the browser) |
 
-Copy `.env.example` to `.env` to override locally.
+Copy `.env.example` to `.env` to override locally. In production (Vercel), set `NUXT_API_BASE` to your deployed Rails API URL including the `/api` suffix.
+
+## Production
+
+| Service | Host |
+|---------|------|
+| Frontend (Nuxt) | [support-request-journey.vercel.app](https://support-request-journey.vercel.app) |
+| Backend (Rails API) | [support-request-journey.onrender.com](https://support-request-journey.onrender.com) |
+
+The Vercel frontend calls the Render API through Nuxt server routes. Set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` in Vercel project settings and redeploy after changing it.
+
+Backend deployment uses `backend/` as the Render root directory (`Procfile`, `bin/render-build.sh`). See [`backend/README.md`](./backend/README.md) for API and deployment details.
 
 ## Rails API (reference)
 
@@ -284,9 +309,11 @@ These are useful alongside automated checks:
 ├── backend/              # Rails API
 │   ├── app/models/       # Service, SupportRequest
 │   ├── app/controllers/api/
+│   ├── bin/render-build.sh  # Render build script
+│   ├── Procfile          # Puma start command for Render
 │   ├── test/             # Minitest (models + API)
 │   ├── db/migrate/       # PostgreSQL schema
-│   └── db/seeds.rb       # Sample services
+│   └── db/seeds.rb       # Sample services (idempotent)
 ├── components/           # Vue UI components
 ├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
@@ -295,4 +322,4 @@ These are useful alongside automated checks:
 └── utils/                # Validation, API mappers
 ```
 
-For a full backend walkthrough and copy-paste test commands, see the guides in `docs/` (`backend-guide.md`, `testing-cookbook.md`).
+See [`backend/README.md`](./backend/README.md) for the Rails API reference, models, and Render deployment notes.

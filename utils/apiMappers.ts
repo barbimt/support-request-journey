@@ -1,4 +1,5 @@
 import type { Service, ServiceCategory } from '~/interfaces/service'
+import type { ServiceForm } from '~/interfaces/serviceForm'
 import type { SupportRequestForm, ValidationError } from '~/interfaces/supportRequest'
 
 export interface RailsService {
@@ -30,6 +31,18 @@ const SUPPORT_REQUEST_FIELD_MAP: Record<string, keyof SupportRequestForm> = {
   consent: 'consent',
 }
 
+const SERVICE_FIELD_MAP: Record<string, keyof ServiceForm> = {
+  title: 'title',
+  category: 'category',
+  description: 'description',
+  eligibility: 'eligibility',
+  contact_email: 'contactEmail',
+  phone: 'phone',
+  opening_hours: 'openingHours',
+  accessibility_notes: 'accessibilityNotes',
+  online_support: 'onlineSupport',
+}
+
 export const mapRailsServiceToService = (railsService: RailsService): Service => ({
   id: String(railsService.id),
   title: railsService.title,
@@ -57,11 +70,41 @@ export const mapSupportRequestFormToRails = (form: SupportRequestForm, serviceId
   },
 })
 
+export const mapServiceFormToRails = (form: ServiceForm) => ({
+  service: {
+    title: form.title.trim(),
+    category: form.category,
+    description: form.description.trim(),
+    eligibility: form.eligibility.trim(),
+    contact_email: form.contactEmail.trim(),
+    phone: form.phone.trim(),
+    opening_hours: form.openingHours.trim(),
+    accessibility_notes: form.accessibilityNotes.trim(),
+    online_support: form.onlineSupport,
+  },
+})
+
 export const mapRailsValidationErrors = (
   errors: Record<string, string[]>,
 ): ValidationError[] =>
   Object.entries(errors).flatMap(([field, messages]) => {
     const mappedField = SUPPORT_REQUEST_FIELD_MAP[field]
+
+    if (!mappedField) {
+      return []
+    }
+
+    return messages.map((message) => ({
+      field: mappedField,
+      message,
+    }))
+  })
+
+export const mapServiceValidationErrors = (
+  errors: Record<string, string[]>,
+): Array<{ field: keyof ServiceForm; message: string }> =>
+  Object.entries(errors).flatMap(([field, messages]) => {
+    const mappedField = SERVICE_FIELD_MAP[field]
 
     if (!mappedField) {
       return []

@@ -296,3 +296,88 @@ These are useful alongside automated checks:
 ```
 
 For a full backend walkthrough and copy-paste test commands, see the guides in `docs/` (`backend-guide.md`, `testing-cookbook.md`).
+
+## Deployment
+
+Production stack: **Vercel** (Nuxt frontend) + **Render** (Rails API + PostgreSQL).
+
+```
+Browser → Nuxt on Vercel → Nuxt server routes (/api/*) → Rails on Render → PostgreSQL
+```
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for architecture notes, troubleshooting, and seed instructions.
+
+### Backend on Render
+
+1. Create a **PostgreSQL** database on Render.
+2. Create a **Web Service** from this GitHub repository.
+3. Set **root directory** to `backend`.
+4. Use the **Ruby** runtime (see `backend/.ruby-version`).
+5. **Build command:**
+
+   ```bash
+   ./bin/render-build.sh
+   ```
+
+   or:
+
+   ```bash
+   bundle install && bundle exec rails db:migrate
+   ```
+
+6. **Start command:**
+
+   ```bash
+   bundle exec puma -C config/puma.rb
+   ```
+
+7. **Health check path:** `/up`
+
+8. **Environment variables:**
+
+   | Variable | Value |
+   |----------|-------|
+   | `RAILS_ENV` | `production` |
+   | `RAILS_MASTER_KEY` | From `backend/config/master.key` (never commit the value) |
+   | `RAILS_LOG_TO_STDOUT` | `true` |
+   | `RAILS_SERVE_STATIC_FILES` | `true` |
+   | `DATABASE_URL` | Render PostgreSQL internal URL (auto-set when database is linked) |
+
+9. After the first deploy, run seeds **once** from **Render Shell**:
+
+   ```bash
+   bundle exec rails db:seed
+   ```
+
+   Seeds are idempotent (`find_or_create_by!` on title).
+
+10. **Smoke test:**
+
+    - `https://your-render-backend.onrender.com/up`
+    - `https://your-render-backend.onrender.com/api/services`
+
+### Frontend on Vercel
+
+1. Open **Vercel Project Settings → Environment Variables**.
+2. Add:
+
+   ```
+   NUXT_API_BASE=https://your-render-backend.onrender.com/api
+   ```
+
+   This is **private** runtime config used by Nuxt server routes — not `runtimeConfig.public`.
+
+3. **Redeploy** the frontend after setting the variable.
+4. **Smoke test:**
+
+   - `https://support-request-journey.vercel.app/services`
+   - `https://support-request-journey.vercel.app/manage/services`
+
+### Empty services in production?
+
+If `/services` is empty on Vercel:
+
+- Confirm the Rails API is awake and `/api/services` returns data.
+- Confirm `db:seed` has been run on Render.
+- Confirm `NUXT_API_BASE` is set in Vercel and points to `https://<render-host>/api`.
+- Redeploy Vercel after changing environment variables.

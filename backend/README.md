@@ -181,12 +181,25 @@ bin/ci
 
 ## Deployment
 
-Deploy this API separately from the Nuxt frontend (e.g. Render, Fly.io, Railway).
+Deploy this API on **Render** (Web Service + PostgreSQL). The Nuxt frontend on **Vercel** calls this API through server routes using `NUXT_API_BASE`.
 
-Set `NUXT_API_BASE` in the Nuxt deployment to your production API URL, for example:
+Full step-by-step instructions: **[DEPLOYMENT.md](../DEPLOYMENT.md)** in the project root.
 
+### Render quick reference
+
+| Setting | Value |
+|---------|-------|
+| Root directory | `backend` |
+| Build command | `./bin/render-build.sh` |
+| Start command | `bundle exec puma -C config/puma.rb` |
+| Health check | `/up` |
+
+**Environment variables:** `RAILS_ENV=production`, `RAILS_MASTER_KEY` (from `config/master.key`, never commit), `RAILS_LOG_TO_STDOUT=true`, `RAILS_SERVE_STATIC_FILES=true`, `DATABASE_URL` (from linked Render PostgreSQL).
+
+After first deploy, run once from Render Shell:
+
+```bash
+bundle exec rails db:seed
 ```
-NUXT_API_BASE=https://your-api.example.com/api
-```
 
-The frontend README has more on environment variables and architecture.
+**Vercel:** set `NUXT_API_BASE=https://your-render-backend.onrender.com/api` and redeploy the frontend.

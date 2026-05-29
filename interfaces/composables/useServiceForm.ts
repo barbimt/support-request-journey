@@ -1,4 +1,3 @@
-import type { Service } from '~/interfaces/service'
 import type { ServiceForm, ServiceValidationError } from '~/interfaces/serviceForm'
 
 export interface UseServiceFormReturn {
@@ -9,8 +8,6 @@ export interface UseServiceFormReturn {
   successMessage: Ref<string>
   serverError: Ref<string>
   errorSummaryRef: Ref<{ focus: () => void } | null>
-  existingServices: Ref<Service[]>
-  isLoadingServices: Ref<boolean>
   errorFor: (field: keyof ServiceForm) => string | undefined
-  handleSubmit: () => Promise<void>
+  handleSubmit: () => Promise<boolean>
 }

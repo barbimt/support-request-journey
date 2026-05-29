@@ -222,6 +222,7 @@
 <script setup lang="ts">
 import { ALL_CATEGORIES, getCategoryLabel } from '~/utils/categories'
 
+const { getServices } = useServices()
 const {
   form,
   errors,
@@ -230,9 +231,21 @@ const {
   successMessage,
   serverError,
   errorSummaryRef,
-  existingServices,
-  isLoadingServices,
   errorFor,
-  handleSubmit,
+  handleSubmit: submitServiceForm,
 } = useServiceForm()
+
+const { data: existingServices, pending: isLoadingServices, refresh } = await useAsyncData(
+  'services',
+  () => getServices(),
+  { default: () => [] },
+)
+
+const handleSubmit = async (): Promise<void> => {
+  const created = await submitServiceForm()
+
+  if (created) {
+    await refresh()
+  }
+}
 </script>

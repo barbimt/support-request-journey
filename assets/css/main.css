@@ -108,6 +108,32 @@
     @apply min-h-11 w-full rounded-md border-2 border-stone-300 bg-white px-4 py-3 text-base leading-normal text-slate-950 shadow-sm placeholder:text-stone-600 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-0 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:bg-stone-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-400 dark:shadow-none dark:disabled:bg-slate-800 dark:focus-visible:outline-amber-300;
   }
 
+  select.form-input {
+    @apply cursor-pointer appearance-none bg-no-repeat pr-11;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2344403c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+    background-size: 1.25rem 1.25rem;
+    background-position: right 0.875rem center;
+  }
+
+  .dark select.form-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  }
+
+  .form-field:has(select) {
+    @apply overflow-visible;
+  }
+
+  select.form-input[aria-invalid='true'] {
+    @apply border-red-700 bg-red-50 dark:border-red-400 dark:bg-red-950;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23b91c1c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+    background-size: 1.25rem 1.25rem;
+    background-position: right 0.875rem center;
+  }
+
+  .dark select.form-input[aria-invalid='true'] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23fca5a5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  }
+
   .form-input[aria-invalid='true'] {
     @apply border-red-700 bg-red-50 dark:border-red-400 dark:bg-red-950;
   }

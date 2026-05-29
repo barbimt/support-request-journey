@@ -1,5 +1,3 @@
-import type { ValidationError } from '~/interfaces/supportRequest'
-
 export interface ErrorSummaryProps {
-  errors: ValidationError[]
+  errors: Array<{ field: string; message: string }>
 }

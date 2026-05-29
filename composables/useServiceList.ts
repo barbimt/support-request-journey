@@ -9,14 +9,15 @@ export const useServiceList = (): UseServiceListReturn => {
 
   const search = ref('')
   const category = ref<ServiceCategory | '' | 'all'>('all')
-  const services = ref<Service[]>([])
 
-  onMounted(async () => {
-    services.value = await getServices()
-  })
+  const { data: services } = useAsyncData(
+    'services',
+    () => getServices(),
+    { default: () => [] as Service[] },
+  )
 
   const filteredServices = computed(() =>
-    filterServices(services.value, {
+    filterServices(services.value ?? [], {
       search: search.value,
       category: category.value,
     } satisfies ServiceFilterOptions),

@@ -1,29 +1,30 @@
 <template>
   <AppContainer>
-    <PageHeader
-      heading-id="request-support-heading"
-      title="Request support"
-      intro="Complete this form and we will contact you using your preferred method. Fields marked as required must be filled in."
-    />
+    <div class="form-page">
+      <PageHeader
+        heading-id="request-support-heading"
+        title="Request support"
+        intro="Complete this form and we will contact you using your preferred method. Fields marked as required must be filled in."
+      />
 
-    <StatusMessage
-      v-if="submitSuccess"
-      class="mb-8"
-      :message="successMessage || 'Your support request has been sent. We will contact you soon.'"
-    />
+      <StatusMessage
+        v-if="submitSuccess"
+        class="mb-8"
+        :message="successMessage || 'Your support request has been sent. We will contact you soon.'"
+      />
 
-    <div
-      v-if="serverError"
-      class="alert-error mb-8"
-      role="alert"
-      tabindex="-1"
-    >
-      <p class="text-base font-semibold leading-relaxed sm:text-lg">
-        {{ serverError }}
-      </p>
-    </div>
+      <div
+        v-if="serverError"
+        class="alert-error mb-8"
+        role="alert"
+        tabindex="-1"
+      >
+        <p class="text-base font-semibold leading-relaxed sm:text-lg">
+          {{ serverError }}
+        </p>
+      </div>
 
-    <form novalidate class="max-w-2xl space-y-8" @submit.prevent="handleSubmit">
+      <form novalidate class="space-y-8" @submit.prevent="handleSubmit">
       <ErrorSummary
         v-if="errors.length"
         ref="errorSummaryRef"
@@ -186,7 +187,8 @@
           {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
         </AppButton>
       </div>
-    </form>
+      </form>
+    </div>
   </AppContainer>
 </template>
 

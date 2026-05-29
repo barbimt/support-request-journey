@@ -24,7 +24,7 @@
     />
 
     <aside
-      class="theme-divider card-panel mt-10 max-w-2xl sm:mt-12"
+      class="theme-divider card-panel mt-10 w-full sm:mt-12"
       aria-labelledby="service-providers-heading"
     >
       <p class="text-sm font-semibold uppercase tracking-wide text-stone-600 dark:text-slate-400">

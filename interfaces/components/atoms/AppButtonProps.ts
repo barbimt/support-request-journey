@@ -1,10 +1,14 @@
-export type ButtonVariant = 'primary' | 'secondary'
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 
 export type ButtonType = 'button' | 'submit' | 'reset'
+
+export type ButtonSize = 'default' | 'compact'
 
 export interface AppButtonProps {
   to?: string
   variant?: ButtonVariant
+  size?: ButtonSize
+  block?: boolean
   type?: ButtonType
   disabled?: boolean
   ariaBusy?: boolean

@@ -185,6 +185,7 @@
         <AppButton
           type="submit"
           variant="primary"
+          block
           :disabled="isSubmitting"
           :aria-busy="isSubmitting"
         >

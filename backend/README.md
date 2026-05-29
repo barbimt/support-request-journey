@@ -4,16 +4,18 @@ JSON API for the [Support Request Journey](../README.md) app. Stores support ser
 
 The browser never calls this API directly. **Nuxt** server routes proxy requests using `NUXT_API_BASE` (default `http://localhost:3001/api`).
 
+**Production API:** [support-request-journey.onrender.com](https://support-request-journey.onrender.com)
+
 ## Stack
 
-- **Ruby** 3.4+ on Render (see `.ruby-version`); 4.0+ works locally
+- **Ruby** 3.4.4 (see `.ruby-version`; required for Render; Ruby 4.0+ works locally)
 - **Rails** 8.1 (API mode)
 - **PostgreSQL** 16+
 - **Puma**
 
 ## Prerequisites
 
-- Ruby 4.0+ and Bundler
+- Ruby 3.4+ and Bundler
 - PostgreSQL 16+ running locally
 
 On macOS with Homebrew:
@@ -42,12 +44,16 @@ Start the Nuxt frontend from the project root in a second terminal (`npm run dev
 
 Base URL in development: `http://localhost:3001/api`
 
+Base URL in production: `https://support-request-journey.onrender.com/api`
+
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/services` | List all services (ordered by title) |
 | GET | `/services/:id` | One service, or `404` with `{ "message": "Service not found" }` |
 | POST | `/services` | Create a service — `201` + JSON, or `422` with validation errors |
 | POST | `/support_requests` | Create a support request — `201` with reference (e.g. `SR-0001`), or `422` |
+
+Health check (no `/api` prefix): `GET /up`
 
 ### Examples
 
@@ -129,12 +135,16 @@ Reference format: `SR-0001` (zero-padded id).
 app/
 ├── controllers/api/     # services_controller, support_requests_controller
 ├── models/              # Service, SupportRequest
+bin/
+├── render-build.sh      # Render build: bundle install + db:migrate
 config/
-├── routes.rb            # /api namespace
+├── routes.rb            # /api namespace + GET /up
+├── database.yml         # production uses DATABASE_URL
 db/
 ├── migrate/             # Schema migrations
 ├── schema.rb
-└── seeds.rb             # Sample services for development
+└── seeds.rb             # Sample services (idempotent find_or_create_by!)
+Procfile                 # web: bundle exec puma -C config/puma.rb
 test/
 ├── models/              # Validation and association tests
 ├── controllers/api/     # Request/response tests for each endpoint
@@ -162,31 +172,45 @@ npm run test:backend
 - `POST /api/services` (201 and 422)
 - `POST /api/support_requests` (201 and 422)
 
-For manual curl checks and full-stack testing through Nuxt, see [`docs/testing-cookbook.md`](../docs/testing-cookbook.md) in the project root.
-
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on push and pull requests:
+The root [GitHub Actions workflow](../.github/workflows/ci.yml) runs on pull requests and pushes to `main`:
 
-- Brakeman (security)
-- bundler-audit (gem vulnerabilities)
-- RuboCop (style)
-- **Minitest** (with PostgreSQL 16)
+- **Frontend** — Vitest unit tests and production build
+- **Backend** — Rails tests with PostgreSQL 16
+- **E2E** — Playwright full-stack tests
 
-Run the same checks locally:
+This directory also has `bin/ci` for local Rails security and style checks (Brakeman, bundler-audit, RuboCop, Minitest).
+
+## Deployment (Render)
+
+Deployed as a **Ruby Web Service** on Render with **PostgreSQL**. The Nuxt frontend on Vercel connects via `NUXT_API_BASE`.
+
+| Render setting | Value |
+|----------------|-------|
+| Root directory | `backend` |
+| Runtime | **Ruby** (not Node) |
+| Build command | `./bin/render-build.sh` |
+| Start command | `bundle exec puma -C config/puma.rb` |
+| Health check path | `/up` |
+
+**Environment variables:**
+
+| Variable | Value |
+|----------|--------|
+| `RAILS_ENV` | `production` |
+| `RAILS_MASTER_KEY` | Contents of `config/master.key` (never commit) |
+| `RAILS_LOG_TO_STDOUT` | `true` |
+| `RAILS_SERVE_STATIC_FILES` | `true` |
+| `DATABASE_URL` | From linked Render PostgreSQL |
+
+After the first deploy, load sample data once (from your machine using the PostgreSQL **External Database URL**, or via `POST /api/services`):
 
 ```bash
-bin/ci
+export DATABASE_URL="..." RAILS_ENV=production RAILS_MASTER_KEY="$(cat config/master.key)"
+bundle exec rails db:seed
 ```
 
-## Deployment
+**Vercel:** set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` and redeploy the frontend.
 
-Deploy this API separately from the Nuxt frontend (e.g. Render, Fly.io, Railway).
-
-Set `NUXT_API_BASE` in the Nuxt deployment to your production API URL, for example:
-
-```
-NUXT_API_BASE=https://your-api.example.com/api
-```
-
-The frontend README has more on environment variables and architecture.
+Seeds are idempotent (`find_or_create_by!` on service title). Production uses Ruby **3.4.4** because Render does not support Ruby 4.0 yet.

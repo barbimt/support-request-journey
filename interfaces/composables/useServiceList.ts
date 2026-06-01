@@ -13,8 +13,8 @@ export interface UseServiceListReturn {
   totalPages: ComputedRef<number>
   rangeStart: ComputedRef<number>
   rangeEnd: ComputedRef<number>
-  goToPreviousPage: () => void
-  goToNextPage: () => void
+  goToPreviousPage: () => void | Promise<void>
+  goToNextPage: () => void | Promise<void>
   isLoadingServices: ComputedRef<boolean>
   servicesLoadError: ComputedRef<boolean>
   hasServices: ComputedRef<boolean>

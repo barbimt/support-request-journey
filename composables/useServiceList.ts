@@ -40,7 +40,7 @@ export const useServiceList = (options: UseServiceListOptions = {}): UseServiceL
     goToPreviousPage,
     goToNextPage,
     resetPage,
-  } = usePagination(filteredServices, SERVICES_PUBLIC_PAGE_SIZE)
+  } = usePagination(filteredServices, SERVICES_PUBLIC_PAGE_SIZE, { syncQueryKey: 'page' })
 
   watch([search, category], () => {
     resetPage()
@@ -56,13 +56,13 @@ export const useServiceList = (options: UseServiceListOptions = {}): UseServiceL
     })
   }
 
-  const goToPreviousPageWithScroll = (): void => {
-    goToPreviousPage()
+  const goToPreviousPageWithScroll = async (): Promise<void> => {
+    await goToPreviousPage()
     scrollToResults()
   }
 
-  const goToNextPageWithScroll = (): void => {
-    goToNextPage()
+  const goToNextPageWithScroll = async (): Promise<void> => {
+    await goToNextPage()
     scrollToResults()
   }
 

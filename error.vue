@@ -46,6 +46,7 @@
 
         <div class="error-page-actions">
           <AppButton variant="primary" @click="goHome">
+            <ArrowLeftIcon class="h-5 w-5 shrink-0" aria-hidden="true" />
             Back to home
           </AppButton>
           <AppButton v-if="isNotFound" to="/services" variant="secondary">
@@ -66,6 +67,7 @@
 
 <script setup lang="ts">
 import {
+  ArrowLeftIcon,
   ExclamationTriangleIcon,
   LinkSlashIcon,
 } from '@heroicons/vue/24/outline'

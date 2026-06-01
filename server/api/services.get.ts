@@ -1,7 +1,7 @@
 import type { RailsService } from '~/utils/apiMappers'
 import { mapRailsServiceToService } from '~/utils/apiMappers'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
     const services = await railsFetch<RailsService[]>('/services')
     return services.map(mapRailsServiceToService)

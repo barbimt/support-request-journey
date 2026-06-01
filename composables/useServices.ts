@@ -1,8 +1,6 @@
 import type { UseServicesReturn, ServiceFilterOptions } from '~/interfaces/composables/useServices'
 import type { Service } from '~/interfaces/service'
 
-export type { ServiceFilterOptions, UseServicesReturn } from '~/interfaces/composables/useServices'
-
 export const useServices = (): UseServicesReturn => {
   const getServices = async (): Promise<Service[]> => {
     return await $fetch<Service[]>('/api/services')

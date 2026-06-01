@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppButtonProps } from '~/interfaces/components/atoms/AppButtonProps'
+import type { AppButtonProps, ButtonVariant } from '~/interfaces/components/atoms/AppButtonProps'
 
 const props = withDefaults(defineProps<AppButtonProps>(), {
   variant: 'primary',
@@ -26,12 +26,15 @@ const props = withDefaults(defineProps<AppButtonProps>(), {
 })
 
 const variantClass = computed((): string => {
+  const variantMap: Record<ButtonVariant, string> = {
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
+    danger: 'btn-danger',
+  }
+
   const classes = [
-    props.variant === 'secondary'
-      ? 'btn-secondary'
-      : props.variant === 'ghost'
-        ? 'btn-ghost'
-        : 'btn-primary',
+    variantMap[props.variant],
     props.size === 'compact' ? 'btn-compact' : '',
     props.block ? 'btn-block' : '',
   ]

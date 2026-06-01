@@ -6,7 +6,7 @@
   >
     <CheckCircleIcon class="alert-success-icon" aria-hidden="true" />
     <p class="text-base font-semibold leading-relaxed sm:text-lg">
-      {{ message }}
+      <slot>{{ message }}</slot>
     </p>
   </div>
 </template>

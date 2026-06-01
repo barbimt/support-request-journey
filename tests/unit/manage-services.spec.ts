@@ -1,12 +1,14 @@
+import { flushPromises } from '@vue/test-utils'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
-import ManageServicesPage from '~/pages/manage/services.vue'
+import ManageServicesPage from '~/pages/manage/services/index.vue'
 
 const mockCreateService = vi.fn()
 
 vi.mock('~/composables/useServiceManagement', () => ({
   useServiceManagement: () => ({
     createService: mockCreateService,
+    deleteService: vi.fn(),
   }),
 }))
 
@@ -14,7 +16,7 @@ vi.mock('~/composables/useServices', () => ({
   useServices: () => ({
     getServices: vi.fn().mockResolvedValue([]),
     getServiceById: vi.fn(),
-    filterServices: vi.fn(),
+    filterServices: vi.fn((services: unknown[]) => services ?? []),
   }),
 }))
 
@@ -53,7 +55,7 @@ describe('manage services page', () => {
     await wrapper.get('#description').setValue('Support for young people facing housing issues.')
 
     await wrapper.get('form').trigger('submit.prevent')
-    await wrapper.vm.$nextTick()
+    await flushPromises()
 
     expect(mockCreateService).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -64,5 +66,6 @@ describe('manage services page', () => {
     )
     expect(wrapper.text()).toContain('Youth housing advice')
     expect(wrapper.text()).toContain('has been added.')
+    expect(wrapper.text()).toContain('View service details')
   })
 })

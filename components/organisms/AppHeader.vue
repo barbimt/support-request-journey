@@ -68,6 +68,15 @@ const isCurrent = (path: string): boolean => {
   if (path === '/') {
     return route.path === '/'
   }
+
+  if (path === '/services') {
+    return (
+      route.path === '/services'
+      || route.path.startsWith('/services/')
+      || route.path.startsWith('/manage/services')
+    )
+  }
+
   return route.path === path || route.path.startsWith(`${path}/`)
 }
 

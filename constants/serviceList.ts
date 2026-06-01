@@ -1,0 +1,3 @@
+export const SERVICES_PUBLIC_PAGE_SIZE = 6
+
+export const MANAGE_SERVICES_PAGE_SIZE = 5

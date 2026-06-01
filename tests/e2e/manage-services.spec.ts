@@ -1,10 +1,80 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page, type Response } from '@playwright/test'
+
+test.describe.configure({ mode: 'serial' })
+
+async function waitForManagePageReady(page: Page): Promise<void> {
+  await page.locator('#main-content').waitFor({ state: 'visible' })
+  await page.getByRole('heading', { name: 'Manage services' }).waitFor({ state: 'visible' })
+  await page.locator('#title').waitFor({ state: 'visible' })
+}
+
+async function fillServiceTitle(page: Page, title: string): Promise<void> {
+  const titleField = page.locator('#title')
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await titleField.click()
+    await titleField.fill(title)
+
+    if (await titleField.inputValue() === title) {
+      return
+    }
+
+    await page.waitForTimeout(200)
+  }
+
+  await expect(titleField).toHaveValue(title)
+}
+
+async function createManageService(page: Page, title: string): Promise<void> {
+  await page.goto('/services')
+  await page.getByRole('link', { name: 'Add a service to the directory' }).click()
+  await waitForManagePageReady(page)
+
+  await fillServiceTitle(page, title)
+  await page.locator('#category').selectOption('mental-health')
+  await page.locator('#description').fill('E2E test service description.')
+
+  await page.getByRole('button', { name: 'Create service' }).click()
+  await expect(page.getByRole('status')).toContainText(title, { timeout: 15_000 })
+  await expect(page.getByRole('status')).toContainText('has been added.')
+}
+
+async function openEditFromSuccessLink(page: Page): Promise<void> {
+  await page.getByRole('status').getByRole('link', { name: 'View service details' }).click()
+  await page.getByRole('link', { name: 'Edit service' }).click()
+  await expect(page).toHaveURL(/\/manage\/services\//)
+}
+
+function isServicesListResponse(response: Response): boolean {
+  const url = new URL(response.url())
+
+  return response.request().method() === 'GET'
+    && url.pathname === '/api/services'
+    && response.ok()
+}
+
+function serviceRowInTable(page: Page, title: string) {
+  return page
+    .locator('#existing-services-table tbody')
+    .getByRole('row', { name: new RegExp(title) })
+}
+
+async function findExistingServiceRow(page: Page, title: string) {
+  await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
+  await page.locator('#existingServicesSearch').fill(title)
+
+  const row = serviceRowInTable(page, title)
+  await expect(row).toBeVisible({ timeout: 15_000 })
+
+  return row
+}
 
 test('create service from manage page', async ({ page }) => {
   await page.goto('/services')
 
   await page.getByRole('link', { name: 'Add a service to the directory' }).click()
   await expect(page).toHaveURL('/manage/services')
+  await waitForManagePageReady(page)
 
   await page.getByRole('button', { name: 'Create service' }).click()
 
@@ -19,4 +89,59 @@ test('create service from manage page', async ({ page }) => {
 
   await expect(page.getByRole('status')).toContainText('Community wellbeing drop-in')
   await expect(page.getByRole('status')).toContainText('has been added.')
+})
+
+test('update service from manage page', async ({ page }) => {
+  const title = `E2E update ${Date.now()}`
+  const updatedTitle = `${title} updated`
+
+  await createManageService(page, title)
+  await openEditFromSuccessLink(page)
+
+  await fillServiceTitle(page, updatedTitle)
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  await expect(page.getByRole('status')).toContainText(updatedTitle, { timeout: 15_000 })
+  await expect(page.getByRole('status')).toContainText('has been updated.')
+})
+
+test('delete service from manage page', async ({ page }) => {
+  const title = `E2E delete ${Date.now()}`
+
+  await createManageService(page, title)
+
+  const href = await page
+    .getByRole('status')
+    .getByRole('link', { name: 'View service details' })
+    .getAttribute('href')
+
+  if (!href) {
+    throw new Error('Expected a service details link after creating a service.')
+  }
+
+  const serviceId = href.replace('/services/', '')
+  const row = await findExistingServiceRow(page, title)
+
+  await row.getByRole('button', { name: 'Delete' }).click()
+
+  await expect(page.getByRole('alertdialog')).toBeVisible()
+  await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
+
+  // Playwright docs: start waiting for the response before the action that triggers it.
+  const deleteResponsePromise = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE'
+      && response.url().includes(`/api/services/${serviceId}`)
+      && response.ok(),
+  )
+
+  await page.getByRole('button', { name: 'Yes, delete service' }).click()
+  await deleteResponsePromise
+  await page.waitForResponse(isServicesListResponse)
+
+  await expect(page.getByRole('alertdialog')).toBeHidden()
+  await expect(
+    serviceRowInTable(page, title),
+    'deleted service should disappear from the existing services table',
+  ).toHaveCount(0, { timeout: 15_000 })
 })

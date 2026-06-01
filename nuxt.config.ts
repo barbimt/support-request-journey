@@ -31,6 +31,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'Support Request Journey',
+      titleTemplate: '%s – Support Request Journey',
       script: [
         {
           key: 'theme-init',

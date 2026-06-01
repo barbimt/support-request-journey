@@ -19,6 +19,7 @@
 
       <div
         v-if="serverError"
+        ref="serverErrorRef"
         class="alert-error mb-8"
         role="alert"
         tabindex="-1"
@@ -207,10 +208,13 @@ const {
   submitSuccess,
   successMessage,
   serverError,
+  serverErrorRef,
   errorSummaryRef,
   supportForOptions,
   contactOptions,
   errorFor,
   handleSubmit,
 } = useSupportRequestForm()
+
+useHead({ title: 'Request support' })
 </script>

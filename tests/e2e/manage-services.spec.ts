@@ -1,29 +1,11 @@
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+import {
+  fillServiceTitle,
+  isServicesListResponse,
+  waitForManagePageReady,
+} from './e2e-helpers'
 
 test.describe.configure({ mode: 'serial' })
-
-async function waitForManagePageReady(page: Page): Promise<void> {
-  await page.locator('#main-content').waitFor({ state: 'visible' })
-  await page.getByRole('heading', { name: 'Manage services' }).waitFor({ state: 'visible' })
-  await page.locator('#title').waitFor({ state: 'visible' })
-}
-
-async function fillServiceTitle(page: Page, title: string): Promise<void> {
-  const titleField = page.locator('#title')
-
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    await titleField.click()
-    await titleField.fill(title)
-
-    if (await titleField.inputValue() === title) {
-      return
-    }
-
-    await page.waitForTimeout(200)
-  }
-
-  await expect(titleField).toHaveValue(title)
-}
 
 async function createManageService(page: Page, title: string): Promise<void> {
   await page.goto('/services')
@@ -43,14 +25,6 @@ async function openEditFromSuccessLink(page: Page): Promise<void> {
   await page.getByRole('status').getByRole('link', { name: 'View service details' }).click()
   await page.getByRole('link', { name: 'Edit service' }).click()
   await expect(page).toHaveURL(/\/manage\/services\//)
-}
-
-function isServicesListResponse(response: Response): boolean {
-  const url = new URL(response.url())
-
-  return response.request().method() === 'GET'
-    && url.pathname === '/api/services'
-    && response.ok()
 }
 
 function serviceRowInTable(page: Page, title: string) {
@@ -127,7 +101,6 @@ test('delete service from manage page', async ({ page }) => {
   await expect(page.getByRole('alertdialog')).toBeVisible()
   await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
 
-  // Playwright docs: start waiting for the response before the action that triggers it.
   const deleteResponsePromise = page.waitForResponse(
     (response) =>
       response.request().method() === 'DELETE'

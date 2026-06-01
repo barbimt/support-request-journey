@@ -122,4 +122,6 @@ const showFilterEmptyState = computed(
 const showDirectoryEmptyState = computed(
   () => !isLoadingServices.value && !servicesLoadError.value && !hasServices.value,
 )
+
+useHead({ title: 'Support services' })
 </script>

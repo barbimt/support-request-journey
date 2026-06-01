@@ -111,4 +111,10 @@ const {
 const handleSubmit = async (): Promise<void> => {
   await submitServiceForm()
 }
+
+useHead({
+  title: computed(() =>
+    service.value ? `Edit ${service.value.title}` : 'Service not found',
+  ),
+})
 </script>

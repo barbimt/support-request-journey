@@ -9,14 +9,8 @@ export default defineNuxtConfig({
     defaultHighlight: false,
     logIssues: true,
   },
-  ...(process.env.NODE_ENV === 'production'
-    ? {
-        routeRules: {
-          '/services': { swr: 300 },
-          '/services/**': { swr: 300 },
-        },
-      }
-    : {}),
+  // Do not SWR-cache /services: SSR embeds the services list in the HTML payload.
+  // After create/delete on /manage/services, a cached /services page would stay stale for minutes.
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     apiBase: process.env.NUXT_API_BASE || 'http://localhost:3001/api',

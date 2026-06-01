@@ -167,13 +167,19 @@ curl -X POST http://localhost:3001/api/services \
 From the project root:
 
 ```bash
-npm run test          # unit tests (Vitest)
-npm run test:backend  # Rails API tests (Minitest; needs PostgreSQL)
-npm run build         # production build
-npm run test:e2e      # all Playwright tests (starts Rails + preview)
+npm run test:unit      # unit tests (Vitest) — 16 tests
+npm run test:backend   # Rails API tests (Minitest; needs PostgreSQL)
+npm run build          # production build
+npm run test:e2e       # Playwright e2e project — 10 tests (journey, CRUD, keyboard)
+npm run test:a11y      # Playwright a11y project — 19 axe scans
+npm run test:all       # both Playwright projects — 29 tests
 ```
 
-**Backend (Rails + Minitest)**
+Playwright starts Rails and a production preview automatically (`playwright.config.ts`).
+
+**Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server instead of a production preview and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
+
+### Backend (Rails + Minitest)
 
 From the project root:
 
@@ -198,16 +204,44 @@ This runs **17 tests** covering:
 
 Requires PostgreSQL and the `backend_test` database (created automatically by `db:test:prepare`).
 
-**Frontend e2e (Playwright)**
+### Frontend unit (Vitest)
 
 | File | What it covers |
 |------|----------------|
-| `tests/e2e/journey.spec.ts` | Full user journey from home to support request success |
-| `tests/e2e/manage-services.spec.ts` | Create service flow and validation |
-| `tests/e2e/accessibility.spec.ts` | axe-core WCAG scans (18 tests) |
-| `tests/e2e/keyboard-navigation.spec.ts` | Skip link and mobile menu keyboard behaviour (3 tests) |
+| `tests/unit/request-support.spec.ts` | Support request form validation |
+| `tests/unit/manage-services.spec.ts` | Manage services form validation |
+| `tests/unit/services.spec.ts` | Service filtering and pagination |
+| `tests/unit/usePagination.spec.ts` | Pagination composable |
+| `tests/unit/useServiceManagement.spec.ts` | Service management composable |
+| `tests/unit/ServiceCard.spec.ts` | Service card component |
+| `tests/unit/ServiceListLoadState.spec.ts` | Loading and error states |
 
-**Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server instead of a production preview and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
+### Frontend e2e (Playwright)
+
+Playwright is split into two **projects** in `playwright.config.ts`:
+
+| Project | Command | Tests |
+|---------|---------|-------|
+| `e2e` | `npm run test:e2e` | 10 — user flows and keyboard |
+| `a11y` | `npm run test:a11y` | 19 — axe WCAG scans |
+
+**Test architecture** — [Playwright POM](https://playwright.dev/docs/pom) + [fixtures](https://playwright.dev/docs/test-fixtures):
+
+- `tests/e2e/fixtures.ts` — `test.extend` injects `appShell`, `requestSupport`, and `manageServices` page objects
+- `tests/e2e/pages/` — page object classes (locators in constructor)
+- `tests/e2e/copy.ts` — shared UI strings
+- `tests/e2e/routes.ts` — paths and axe scenario config
+- `tests/e2e/e2e-helpers.ts` — waits, navigation, API hydration
+- `tests/e2e/a11y-helpers.ts` — axe scan helpers
+
+Specs import `{ test, expect }` from `./fixtures`.
+
+| File | What it covers |
+|------|----------------|
+| `tests/e2e/journey.spec.ts` | Full journey: home → services → detail → request support → success |
+| `tests/e2e/manage-services.spec.ts` | Create, update, and delete services (serial) |
+| `tests/e2e/keyboard-navigation.spec.ts` | Skip link, mobile menu, validation focus, delete dialog, theme toggle (6 tests) |
+| `tests/e2e/accessibility.spec.ts` | axe-core WCAG scans — pages, error routes, interactive states (19 tests) |
 
 ## Continuous integration
 
@@ -215,7 +249,9 @@ Requires PostgreSQL and the `backend_test` database (created automatically by `d
 
 - **Frontend** — Vitest unit tests and production build
 - **Backend** — Rails tests with PostgreSQL
-- **E2E** — Playwright full-stack tests (user journey and axe accessibility checks)
+- **E2E** — Playwright `e2e` project (user journey, manage CRUD, keyboard tests)
+
+Run `npm run test:a11y` locally (or add it to CI) for the 19 axe scans — they live in a separate Playwright project and are not part of the default CI e2e job today.
 
 ## Accessibility checks
 
@@ -238,32 +274,31 @@ During development, start the app with `npm run dev`, open [http://localhost:300
 
 **Playwright + axe**
 
-Run automated accessibility scans against the main routes:
+Run automated accessibility scans:
 
 ```bash
 npm run test:a11y
-# or explicitly:
-npm run test:a11y:axe
 ```
 
-This starts Rails and a production preview, then scans these routes with axe-core against WCAG 2.0/2.1 A and AA:
+This starts Rails and a production preview, then runs **19 axe tests** in `tests/e2e/accessibility.spec.ts` against WCAG 2.0/2.1 Level A and AA:
 
-- `/`, `/services`, `/request-support`, `/manage/services`
-- **Light and dark mode**
-- **Desktop and mobile** (iPhone 13 viewport)
-- **Mobile menu open** on the home page
+- Main pages — home, services, request support, manage services (desktop light; home dark; mobile light)
+- Mobile menu open — home and services, light and dark
+- Service detail and edit service pages
+- Error pages — 404 (light/dark), service not found
+- Interactive states — validation errors (request + manage), delete confirmation dialog open
 
-That is **18 axe tests** in `tests/e2e/accessibility.spec.ts`.
+**Keyboard navigation (Playwright e2e project)**
 
-**Keyboard navigation (Playwright)**
-
-Automated keyboard checks for the skip link and mobile menu:
+Six automated keyboard checks in `tests/e2e/keyboard-navigation.spec.ts`:
 
 ```bash
-npx playwright test tests/e2e/keyboard-navigation.spec.ts
+npm run test:e2e
+# or only keyboard tests:
+npx playwright test tests/e2e/keyboard-navigation.spec.ts --project=e2e
 ```
 
-These run as part of `npm run test:e2e` as well.
+Covers skip link, mobile menu (open/close/Tab wrap), validation focus, delete dialog Escape/focus return, and theme toggle.
 
 **Pa11y**
 
@@ -318,7 +353,13 @@ These are useful alongside automated checks:
 ├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
 ├── server/api/           # Nuxt proxy routes
-├── tests/e2e/            # Playwright (journey, manage-services, accessibility, keyboard)
+├── tests/e2e/            # Playwright (fixtures, page objects, specs)
+│   ├── fixtures.ts       # test.extend — injects page objects
+│   ├── pages/            # AppShellPage, RequestSupportPage, ManageServicesPage
+│   ├── copy.ts           # Shared UI strings for selectors
+│   ├── routes.ts         # Paths and axe scenario config
+│   ├── e2e-helpers.ts    # Waits and navigation
+│   └── a11y-helpers.ts   # axe scan helpers
 └── utils/                # Validation, API mappers
 ```
 

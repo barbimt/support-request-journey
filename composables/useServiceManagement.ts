@@ -3,8 +3,6 @@ import type { Service } from '~/interfaces/service'
 import type { ServiceForm } from '~/interfaces/serviceForm'
 import { mapServiceValidationErrors } from '~/utils/apiMappers'
 
-export type { UseServiceManagementReturn } from '~/interfaces/composables/useServiceManagement'
-
 const handleServiceMutationError = (error: unknown): {
   validationErrors?: Array<{ field: keyof ServiceForm; message: string }>
   serverError?: string

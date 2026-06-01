@@ -3,12 +3,14 @@ import {
   SUPPORT_FOR_OPTIONS,
   createEmptySupportRequestForm,
 } from '~/constants/supportRequestForm'
+import type {
+  SubmitSupportRequestResult,
+  SubmitSupportRequestSuccess,
+} from '~/interfaces/composables/useSupportRequest'
 import type { UseSupportRequestFormReturn } from '~/interfaces/composables/useSupportRequestForm'
 import type { SupportRequestForm, ValidationError } from '~/interfaces/supportRequest'
 import { getFieldError } from '~/utils/formErrors'
 import { validateSupportRequest } from '~/utils/validateSupportRequest'
-
-export type { UseSupportRequestFormReturn } from '~/interfaces/composables/useSupportRequestForm'
 
 export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
   const route = useRoute()
@@ -25,44 +27,64 @@ export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
   const errorFor = (field: keyof SupportRequestForm): string | undefined =>
     getFieldError(errors.value, field)
 
-  const handleSubmit = async (): Promise<void> => {
+  const resetSubmitState = (): void => {
     submitSuccess.value = false
     successMessage.value = ''
     serverError.value = ''
+  }
+
+  const focusErrorSummary = async (): Promise<void> => {
+    await nextTick()
+    errorSummaryRef.value?.focus()
+  }
+
+  const submitRequest = (): Promise<SubmitSupportRequestResult> => {
+    const serviceId = typeof route.query.service === 'string' ? route.query.service : undefined
+    return submitSupportRequest({ ...form }, serviceId)
+  }
+
+  const applySuccess = (result: SubmitSupportRequestSuccess): void => {
+    submitSuccess.value = true
+    successMessage.value = result.reference
+      ? `${result.message} Your reference is ${result.reference}.`
+      : result.message
+    Object.assign(form, createEmptySupportRequestForm())
+  }
+
+  const applyMutationFailure = async (
+    result: Extract<SubmitSupportRequestResult, { success: false }>,
+  ): Promise<void> => {
+    if ('validationErrors' in result && result.validationErrors.length) {
+      errors.value = result.validationErrors
+      await focusErrorSummary()
+      return
+    }
+
+    if ('serverError' in result) {
+      serverError.value = result.serverError
+      await focusErrorSummary()
+    }
+  }
+
+  const handleSubmit = async (): Promise<void> => {
+    resetSubmitState()
     errors.value = validateSupportRequest(form)
 
     if (errors.value.length) {
-      await nextTick()
-      errorSummaryRef.value?.focus()
+      await focusErrorSummary()
       return
     }
 
     isSubmitting.value = true
     try {
-      const serviceId = typeof route.query.service === 'string' ? route.query.service : undefined
-      const result = await submitSupportRequest({ ...form }, serviceId)
+      const result = await submitRequest()
 
       if (result.success) {
-        submitSuccess.value = true
-        successMessage.value = result.reference
-          ? `${result.message} Your reference is ${result.reference}.`
-          : result.message
-        Object.assign(form, createEmptySupportRequestForm())
+        applySuccess(result)
         return
       }
 
-      if ('validationErrors' in result && result.validationErrors.length) {
-        errors.value = result.validationErrors
-        await nextTick()
-        errorSummaryRef.value?.focus()
-        return
-      }
-
-      if ('serverError' in result) {
-        serverError.value = result.serverError
-        await nextTick()
-        errorSummaryRef.value?.focus()
-      }
+      await applyMutationFailure(result)
     } finally {
       isSubmitting.value = false
     }

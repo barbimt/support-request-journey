@@ -1,4 +1,4 @@
-export type ThemeMode = 'light' | 'dark'
+import type { ThemeMode, UseThemeReturn } from '~/interfaces/composables/useTheme'
 
 const STORAGE_KEY = 'support-journey-theme'
 
@@ -24,7 +24,7 @@ const applyThemeClass = (mode: ThemeMode): void => {
   document.documentElement.classList.toggle('dark', mode === 'dark')
 }
 
-export const useTheme = () => {
+export const useTheme = (): UseThemeReturn => {
   const theme = useState<ThemeMode>('theme-mode', () => 'light')
 
   const setTheme = (mode: ThemeMode): void => {

@@ -68,8 +68,8 @@ async function getCreatedServiceRow(page: Page) {
     throw new Error('Expected a service details link after creating a service.')
   }
 
-  await page.goto('/manage/services')
-  await waitForManagePageReady(page)
+  await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
+  await expect(page.locator(`a[href="${detailsHref}"]`)).toBeVisible({ timeout: 15_000 })
 
   return findServiceRow(page, detailsHref)
 }

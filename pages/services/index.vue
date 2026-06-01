@@ -17,35 +17,57 @@
       />
     </div>
 
-    <div v-if="filteredServices.length" class="services-results">
+    <section aria-labelledby="services-results-heading">
+      <h2 id="services-results-heading" class="sr-only">
+        Service directory results
+      </h2>
+
+      <ServiceListLoadState
+        :pending="isLoadingServices"
+        :error="servicesLoadError"
+        :has-data="hasServices"
+        @retry="retryLoad"
+      />
+
       <div
-        id="services-results-grid"
-        class="grid gap-6 md:grid-cols-2 md:gap-8"
+        v-if="showServiceResults"
+        class="services-results"
       >
-        <ServiceCard
-          v-for="service in paginatedServices"
-          :key="service.id"
-          :service="service"
+        <div
+          id="services-results-grid"
+          class="grid gap-6 md:grid-cols-2 md:gap-8"
+        >
+          <ServiceCard
+            v-for="service in paginatedServices"
+            :key="service.id"
+            :service="service"
+          />
+        </div>
+
+        <PaginationControls
+          v-if="totalPages > 1"
+          label="Support services pagination"
+          controls-id="services-results-grid"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          :range-start="rangeStart"
+          :range-end="rangeEnd"
+          :total-items="filteredServices.length"
+          @previous="goToPreviousPage"
+          @next="goToNextPage"
         />
       </div>
 
-      <PaginationControls
-        v-if="totalPages > 1"
-        label="Support services pagination"
-        controls-id="services-results-grid"
-        :current-page="currentPage"
-        :total-pages="totalPages"
-        :range-start="rangeStart"
-        :range-end="rangeEnd"
-        :total-items="filteredServices.length"
-        @previous="goToPreviousPage"
-        @next="goToNextPage"
+      <EmptyState
+        v-else-if="showFilterEmptyState"
+        message="No services match your search. Try a different keyword or category."
       />
-    </div>
-    <EmptyState
-      v-else
-      message="No services match your search. Try a different keyword or category."
-    />
+
+      <EmptyState
+        v-else-if="showDirectoryEmptyState"
+        message="No services are listed in the directory yet."
+      />
+    </section>
 
     <aside
       class="theme-divider card-panel mt-10 w-full sm:mt-12"
@@ -83,5 +105,21 @@ const {
   rangeEnd,
   goToPreviousPage,
   goToNextPage,
+  isLoadingServices,
+  servicesLoadError,
+  hasServices,
+  retryLoad,
 } = useServiceList({ scrollTarget: resultsTop })
+
+const showServiceResults = computed(
+  () => !isLoadingServices.value && !servicesLoadError.value && filteredServices.value.length > 0,
+)
+
+const showFilterEmptyState = computed(
+  () => !isLoadingServices.value && !servicesLoadError.value && hasServices.value && filteredServices.value.length === 0,
+)
+
+const showDirectoryEmptyState = computed(
+  () => !isLoadingServices.value && !servicesLoadError.value && !hasServices.value,
+)
 </script>

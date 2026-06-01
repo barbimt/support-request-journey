@@ -15,4 +15,8 @@ export interface UseServiceListReturn {
   rangeEnd: ComputedRef<number>
   goToPreviousPage: () => void
   goToNextPage: () => void
+  isLoadingServices: ComputedRef<boolean>
+  servicesLoadError: ComputedRef<boolean>
+  hasServices: ComputedRef<boolean>
+  retryLoad: () => Promise<void>
 }

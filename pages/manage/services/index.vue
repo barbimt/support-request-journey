@@ -61,11 +61,14 @@
           Existing services
         </h2>
 
-        <p v-if="isLoadingServices && !existingServices?.length" class="body-text mt-2">
-          Loading services…
-        </p>
+        <ServiceListLoadState
+          :pending="isLoadingServices"
+          :error="servicesLoadError"
+          :has-data="hasExistingServices"
+          @retry="refreshExistingServices"
+        />
 
-        <template v-else-if="existingServices?.length">
+        <template v-if="!isLoadingServices && !servicesLoadError && existingServices?.length">
           <p class="body-text mt-2">
             {{ existingServices.length }} {{ existingServices.length === 1 ? 'service' : 'services' }} currently listed.
           </p>
@@ -213,7 +216,7 @@
           </div>
         </template>
 
-        <p v-else class="body-text mt-2">
+        <p v-else-if="!isLoadingServices && !servicesLoadError" class="body-text mt-2">
           No services listed yet.
         </p>
       </section>
@@ -241,11 +244,18 @@ const {
   handleSubmit: submitServiceForm,
 } = useServiceForm({ scrollTarget: pageTop })
 
-const { data: existingServices, pending: isLoadingServices, refresh } = useAsyncData(
-  'services',
+const { data: existingServices, pending: isLoadingServices, refresh, error: servicesFetchError } = useAsyncData(
+  'manage-services-list',
   () => getServices(),
   { default: () => [] as Service[] },
 )
+
+const hasExistingServices = computed(() => (existingServices.value?.length ?? 0) > 0)
+const servicesLoadError = computed(() => Boolean(servicesFetchError.value) && !hasExistingServices.value)
+
+const refreshExistingServices = async (): Promise<void> => {
+  await refresh()
+}
 
 const searchQuery = ref('')
 const confirmDeleteId = ref<string | null>(null)

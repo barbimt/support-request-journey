@@ -9,6 +9,14 @@ export default defineNuxtConfig({
     defaultHighlight: false,
     logIssues: true,
   },
+  ...(process.env.NODE_ENV === 'production'
+    ? {
+        routeRules: {
+          '/services': { swr: 300 },
+          '/services/**': { swr: 300 },
+        },
+      }
+    : {}),
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     apiBase: process.env.NUXT_API_BASE || 'http://localhost:3001/api',

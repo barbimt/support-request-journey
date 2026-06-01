@@ -2,8 +2,6 @@ import type { UseSupportRequestReturn } from '~/interfaces/composables/useSuppor
 import type { SupportRequestForm } from '~/interfaces/supportRequest'
 import { mapRailsValidationErrors } from '~/utils/apiMappers'
 
-export type { UseSupportRequestReturn } from '~/interfaces/composables/useSupportRequest'
-
 interface SupportRequestSuccessResponse {
   message: string
   reference: string

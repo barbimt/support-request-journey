@@ -4,19 +4,25 @@ import type { ServiceFilterOptions } from '~/interfaces/composables/useServices'
 import type { Service, ServiceCategory } from '~/interfaces/service'
 import { scrollIntoView } from '~/utils/scrollIntoView'
 
-export type { UseServiceListOptions, UseServiceListReturn } from '~/interfaces/composables/useServiceList'
-
 export const useServiceList = (options: UseServiceListOptions = {}): UseServiceListReturn => {
   const { getServices, filterServices } = useServices()
 
   const search = ref('')
   const category = ref<ServiceCategory | '' | 'all'>('all')
 
-  const { data: services } = useAsyncData(
-    'services',
+  const { data: services, pending, error, refresh } = useAsyncData(
+    'public-services',
     () => getServices(),
     { default: () => [] as Service[] },
   )
+
+  const hasServices = computed(() => (services.value?.length ?? 0) > 0)
+  const isLoadingServices = computed(() => pending.value && !hasServices.value)
+  const servicesLoadError = computed(() => Boolean(error.value) && !hasServices.value)
+
+  const retryLoad = async (): Promise<void> => {
+    await refresh()
+  }
 
   const filteredServices = computed(() =>
     filterServices(services.value ?? [], {
@@ -71,5 +77,9 @@ export const useServiceList = (options: UseServiceListOptions = {}): UseServiceL
     rangeEnd,
     goToPreviousPage: goToPreviousPageWithScroll,
     goToNextPage: goToNextPageWithScroll,
+    isLoadingServices,
+    servicesLoadError,
+    hasServices,
+    retryLoad,
   }
 }

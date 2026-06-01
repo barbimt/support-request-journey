@@ -51,6 +51,8 @@ Base URL in production: `https://support-request-journey.onrender.com/api`
 | GET | `/services` | List all services (ordered by title) |
 | GET | `/services/:id` | One service, or `404` with `{ "message": "Service not found" }` |
 | POST | `/services` | Create a service — `201` + JSON, or `422` with validation errors |
+| PATCH | `/services/:id` | Update a service — `200` + JSON, `404`, or `422` with validation errors |
+| DELETE | `/services/:id` | Delete a service — `204 No Content`, `404`, or `422` if deletion fails |
 | POST | `/support_requests` | Create a support request — `201` with reference (e.g. `SR-0001`), or `422` |
 
 Health check (no `/api` prefix): `GET /up`
@@ -75,6 +77,26 @@ curl -i -X POST http://localhost:3001/api/services \
       "description": "Weekly drop-in sessions with trained wellbeing advisors."
     }
   }'
+```
+
+Update a service:
+
+```bash
+curl -i -X PATCH http://localhost:3001/api/services/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service": {
+      "title": "Updated housing advice",
+      "category": "housing",
+      "description": "Free guidance on renting and housing rights."
+    }
+  }'
+```
+
+Delete a service:
+
+```bash
+curl -i -X DELETE http://localhost:3001/api/services/1
 ```
 
 Create a support request:
@@ -103,6 +125,10 @@ Validation errors use this shape:
   "errors": { "title": ["can't be blank"] }
 }
 ```
+
+Missing or malformed JSON bodies (for example, a PATCH without a `service` wrapper) return `400` with `{ "message": "..." }`.
+
+Deleting a service nullifies linked `support_requests.service_id` rather than deleting those requests.
 
 ## Models
 
@@ -165,11 +191,13 @@ From the project root:
 npm run test:backend
 ```
 
-**17 Minitest tests** cover:
+**23 Minitest tests** cover:
 
 - model validations and associations
 - `GET /api/services`, `GET /api/services/:id` (including 404)
 - `POST /api/services` (201 and 422)
+- `PATCH /api/services/:id` (200, 404, 422, and 400 for missing `service` wrapper)
+- `DELETE /api/services/:id` (204 and 404)
 - `POST /api/support_requests` (201 and 422)
 
 ## CI

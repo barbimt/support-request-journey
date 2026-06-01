@@ -56,6 +56,18 @@ export const mapRailsServiceToService = (railsService: RailsService): Service =>
   onlineSupport: railsService.online_support,
 })
 
+export const mapServiceToForm = (service: Service): ServiceForm => ({
+  title: service.title,
+  category: service.category,
+  description: service.description,
+  eligibility: service.eligibility,
+  contactEmail: service.contactEmail,
+  phone: service.phone,
+  openingHours: service.openingHours,
+  accessibilityNotes: service.accessibilityNotes,
+  onlineSupport: service.onlineSupport,
+})
+
 export const mapSupportRequestFormToRails = (form: SupportRequestForm, serviceId?: string) => ({
   support_request: {
     full_name: form.fullName.trim(),

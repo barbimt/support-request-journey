@@ -1,6 +1,10 @@
 <template>
   <AppContainer>
     <div v-if="service">
+      <p class="mb-8">
+        <BackToHomeButton />
+      </p>
+
       <article>
         <CategoryBadge :category="service.category" wrapper-class="mb-4" />
         <h1 class="page-title">
@@ -13,7 +17,11 @@
           </p>
         </ContentSection>
 
-        <ContentSection title="Eligibility" heading-id="eligibility-heading">
+        <ContentSection
+          v-if="service.eligibility.trim()"
+          title="Eligibility"
+          heading-id="eligibility-heading"
+        >
           <p class="body-text">
             {{ service.eligibility }}
           </p>
@@ -21,13 +29,23 @@
 
         <ContentSection title="Contact details" heading-id="contact-heading">
           <ul class="list-none space-y-4">
-            <li class="body-text">
+            <li v-if="service.contactEmail.trim()" class="body-text">
               <span class="text-strong">Email:</span>
-              <a :href="`mailto:${service.contactEmail}`" class="link-inline ml-1">{{ service.contactEmail }}</a>
+              <a
+                :href="`mailto:${service.contactEmail}`"
+                class="link-inline ml-1"
+              >
+                {{ service.contactEmail }}
+              </a>
             </li>
-            <li class="body-text">
+            <li v-if="service.phone.trim()" class="body-text">
               <span class="text-strong">Phone:</span>
-              <a :href="`tel:${service.phone.replace(/\s/g, '')}`" class="link-inline ml-1">{{ service.phone }}</a>
+              <a
+                :href="`tel:${service.phone.replace(/\s/g, '')}`"
+                class="link-inline ml-1"
+              >
+                {{ service.phone }}
+              </a>
             </li>
             <li class="body-text">
               <span class="text-strong">Online support:</span>
@@ -36,21 +54,32 @@
           </ul>
         </ContentSection>
 
-        <ContentSection title="Opening hours" heading-id="hours-heading">
+        <ContentSection
+          v-if="service.openingHours.trim()"
+          title="Opening hours"
+          heading-id="hours-heading"
+        >
           <p class="body-text">
             {{ service.openingHours }}
           </p>
         </ContentSection>
 
-        <ContentSection title="Accessibility notes" heading-id="accessibility-heading">
+        <ContentSection
+          v-if="service.accessibilityNotes.trim()"
+          title="Accessibility notes"
+          heading-id="accessibility-heading"
+        >
           <p class="body-text">
             {{ service.accessibilityNotes }}
           </p>
         </ContentSection>
 
-        <p class="theme-divider mt-10 border-t pt-8 sm:mt-12 sm:pt-10">
+        <p class="theme-divider mt-10 flex flex-wrap gap-4 border-t pt-8 sm:mt-12 sm:pt-10">
           <AppButton to="/request-support" variant="primary">
             Request support
+          </AppButton>
+          <AppButton :to="`/manage/services/${service.id}`" variant="secondary">
+            Edit service
           </AppButton>
         </p>
       </article>
@@ -63,7 +92,8 @@
       <p class="mt-4 body-text">
         We could not find a service with that reference.
       </p>
-      <p class="mt-8">
+      <p class="mt-8 flex flex-wrap gap-4">
+        <BackToHomeButton />
         <AppButton to="/services" variant="secondary">
           Back to services
         </AppButton>

@@ -1,21 +1,45 @@
 <template>
   <AppContainer>
-    <PageHeader
-      heading-id="services-heading"
-      title="Support services"
-      intro="Search and filter services to find support that matches your situation."
-    />
+    <p class="mb-8">
+      <BackToHomeButton />
+    </p>
 
-    <ServiceFilters
-      v-model:search="search"
-      v-model:category="category"
-    />
+    <div ref="resultsTop">
+      <PageHeader
+        heading-id="services-heading"
+        title="Support services"
+        intro="Search and filter services to find support that matches your situation."
+      />
 
-    <div v-if="filteredServices.length" class="grid gap-6 md:grid-cols-2 md:gap-8">
-      <ServiceCard
-        v-for="service in filteredServices"
-        :key="service.id"
-        :service="service"
+      <ServiceFilters
+        v-model:search="search"
+        v-model:category="category"
+      />
+    </div>
+
+    <div v-if="filteredServices.length" class="services-results">
+      <div
+        id="services-results-grid"
+        class="grid gap-6 md:grid-cols-2 md:gap-8"
+      >
+        <ServiceCard
+          v-for="service in paginatedServices"
+          :key="service.id"
+          :service="service"
+        />
+      </div>
+
+      <PaginationControls
+        v-if="totalPages > 1"
+        label="Support services pagination"
+        controls-id="services-results-grid"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :range-start="rangeStart"
+        :range-end="rangeEnd"
+        :total-items="filteredServices.length"
+        @previous="goToPreviousPage"
+        @next="goToNextPage"
       />
     </div>
     <EmptyState
@@ -46,5 +70,18 @@
 </template>
 
 <script setup lang="ts">
-const { search, category, filteredServices } = useServiceList()
+const resultsTop = ref<HTMLElement | null>(null)
+
+const {
+  search,
+  category,
+  filteredServices,
+  paginatedServices,
+  currentPage,
+  totalPages,
+  rangeStart,
+  rangeEnd,
+  goToPreviousPage,
+  goToNextPage,
+} = useServiceList({ scrollTarget: resultsTop })
 </script>

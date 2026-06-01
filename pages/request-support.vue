@@ -1,6 +1,10 @@
 <template>
   <AppContainer>
     <div class="form-page">
+      <p class="mb-8">
+        <BackToHomeButton />
+      </p>
+
       <PageHeader
         heading-id="request-support-heading"
         title="Request support"

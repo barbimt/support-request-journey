@@ -1,3 +1,3 @@
 export interface StatusMessageProps {
-  message: string
+  message?: string
 }

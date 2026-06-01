@@ -1,12 +1,10 @@
-import { expect, test } from '@playwright/test'
 import {
   assertNoAxeViolations,
   visitAndAssertNoViolations,
   visitMobileMenuOpenAndAssertNoViolations,
 } from './a11y-helpers'
 import { copy } from './copy'
-import { ManageServicesPage } from './pages/manage-services.page'
-import { RequestSupportPage } from './pages/request-support.page'
+import { expect, test } from './fixtures'
 import {
   axePageScenarios,
   axeScenarioLabel,
@@ -41,12 +39,10 @@ test.describe('pages', () => {
     await assertNoAxeViolations(page, 'service detail', { theme: 'light' })
   })
 
-  test('edit service page (light mode, desktop) has no accessibility violations', async ({ page }) => {
-    const manage = new ManageServicesPage(page)
-
+  test('edit service page (light mode, desktop) has no accessibility violations', async ({ page, manageServices }) => {
     await setTheme(page, 'light')
-    await manage.waitForTable()
-    await manage.firstEditLink.click()
+    await manageServices.waitForTable()
+    await manageServices.firstEditLink.click()
     await expect(page).toHaveURL(/\/manage\/services\/.+/)
     await waitForPageReady(page)
 
@@ -76,9 +72,7 @@ test.describe('error pages', () => {
 })
 
 test.describe('interactive states', () => {
-  test('request support validation state has no accessibility violations', async ({ page }) => {
-    const requestSupport = new RequestSupportPage(page)
-
+  test('request support validation state has no accessibility violations', async ({ page, requestSupport }) => {
     await requestSupport.submitEmpty()
 
     await expect(page.locator('[aria-invalid="true"]').first()).toBeVisible()
@@ -86,22 +80,18 @@ test.describe('interactive states', () => {
     await assertNoAxeViolations(page, 'request support (validation errors)')
   })
 
-  test('manage services validation state has no accessibility violations', async ({ page }) => {
-    const manage = new ManageServicesPage(page)
+  test('manage services validation state has no accessibility violations', async ({ page, manageServices }) => {
+    await manageServices.submitEmptyCreate()
 
-    await manage.submitEmptyCreate()
-
-    await expect(manage.titleError).toContainText(copy.validation.serviceTitleRequired)
+    await expect(manageServices.titleError).toContainText(copy.validation.serviceTitleRequired)
 
     await assertNoAxeViolations(page, 'manage services (validation errors)')
   })
 
-  test('delete confirmation dialog has no accessibility violations', async ({ page }) => {
-    const manage = new ManageServicesPage(page)
+  test('delete confirmation dialog has no accessibility violations', async ({ page, manageServices }) => {
+    await manageServices.openDeleteDialogForFirstService()
 
-    await manage.openDeleteDialogForFirstService()
-
-    await expect(manage.deleteDialog).toContainText(copy.deleteDialog.title)
+    await expect(manageServices.deleteDialog).toContainText(copy.deleteDialog.title)
 
     await assertNoAxeViolations(page, 'manage services (delete dialog open)')
   })

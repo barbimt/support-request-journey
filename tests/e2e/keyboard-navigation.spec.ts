@@ -1,92 +1,75 @@
-import { expect, test } from '@playwright/test'
-import { copy } from './copy'
-import { AppShellPage } from './pages/app-shell.page'
-import { ManageServicesPage } from './pages/manage-services.page'
-import { RequestSupportPage } from './pages/request-support.page'
-import { appPages } from './routes'
-import { setTheme, waitForServiceCards } from './e2e-helpers'
+import { expect, test } from './fixtures'
+import { setTheme } from './e2e-helpers'
 
-test('skip link moves focus to main content', async ({ page }) => {
-  const shell = new AppShellPage(page)
+test('skip link moves focus to main content', async ({ appShell }) => {
+  await appShell.goto('home')
 
-  await shell.goto('home')
+  await appShell.page.keyboard.press('Tab')
+  await expect(appShell.skipLink).toBeFocused()
 
-  await page.keyboard.press('Tab')
-  await expect(shell.skipLink).toBeFocused()
-
-  await page.keyboard.press('Enter')
-  await expect(shell.mainContent).toBeFocused()
+  await appShell.page.keyboard.press('Enter')
+  await expect(appShell.mainContent).toBeFocused()
 })
 
-test('mobile menu supports keyboard open, focus, and escape close', async ({ page }) => {
-  const shell = new AppShellPage(page)
-
-  await shell.setMobileViewport()
-  await shell.goto('home')
+test('mobile menu supports keyboard open, focus, and escape close', async ({ appShell }) => {
+  await appShell.setMobileViewport()
+  await appShell.goto('home')
 
   await expect(async () => {
-    await shell.menuToggle.focus()
-    await expect(shell.menuToggle).toBeFocused()
-    await page.keyboard.press('Space')
-    await expect(shell.menuToggle).toHaveAttribute('aria-expanded', 'true')
+    await appShell.menuToggle.focus()
+    await expect(appShell.menuToggle).toBeFocused()
+    await appShell.page.keyboard.press('Space')
+    await expect(appShell.menuToggle).toHaveAttribute('aria-expanded', 'true')
   }).toPass()
 
-  await expect(shell.homeNavLink).toBeFocused()
+  await expect(appShell.homeNavLink).toBeFocused()
 
-  await page.keyboard.press('Escape')
+  await appShell.page.keyboard.press('Escape')
 
-  await expect(shell.menuToggle).toHaveAttribute('aria-expanded', 'false')
-  await expect(shell.menuToggle).toBeFocused()
+  await expect(appShell.menuToggle).toHaveAttribute('aria-expanded', 'false')
+  await expect(appShell.menuToggle).toBeFocused()
 })
 
-test('mobile menu traps focus with Tab from last to first link', async ({ page }) => {
-  const shell = new AppShellPage(page)
+test('mobile menu traps focus with Tab from last to first link', async ({ appShell }) => {
+  await appShell.setMobileViewport()
+  await appShell.goto('home')
+  await appShell.openMobileMenu()
 
-  await shell.setMobileViewport()
-  await shell.goto('home')
-  await shell.openMobileMenu()
+  await appShell.requestSupportNavLink.focus()
+  await appShell.page.keyboard.press('Tab')
 
-  await shell.requestSupportNavLink.focus()
-  await page.keyboard.press('Tab')
-
-  await expect(shell.homeNavLink).toBeFocused()
+  await expect(appShell.homeNavLink).toBeFocused()
 })
 
-test('validation summary receives focus after invalid submit', async ({ page }) => {
-  const requestSupport = new RequestSupportPage(page)
-
+test('validation summary receives focus after invalid submit', async ({ requestSupport }) => {
   await requestSupport.submitEmpty()
 
   await expect(requestSupport.errorSummary).toBeFocused()
 })
 
-test('delete dialog closes with Escape and returns focus to trigger', async ({ page }) => {
-  const manage = new ManageServicesPage(page)
+test('delete dialog closes with Escape and returns focus to trigger', async ({ appShell, manageServices }) => {
+  await manageServices.openDeleteDialogForFirstService()
 
-  await manage.openDeleteDialogForFirstService()
+  await expect(manageServices.deleteDialog).toBeVisible()
+  await expect(manageServices.deleteConfirmButton).toBeFocused()
 
-  await expect(manage.deleteDialog).toBeVisible()
-  await expect(manage.deleteConfirmButton).toBeFocused()
+  await appShell.page.keyboard.press('Escape')
 
-  await page.keyboard.press('Escape')
-
-  await expect(manage.deleteDialog).toBeHidden()
-  await expect(manage.firstDeleteButton).toBeFocused()
+  await expect(manageServices.deleteDialog).toBeHidden()
+  await expect(manageServices.firstDeleteButton).toBeFocused()
 })
 
-test('theme toggle updates pressed state with keyboard', async ({ page }) => {
-  const shell = new AppShellPage(page)
+test('theme toggle updates pressed state with keyboard', async ({ appShell }) => {
+  await setTheme(appShell.page, 'light')
+  await appShell.goto('home')
 
-  await setTheme(page, 'light')
-  await shell.goto('home')
-
-  const themeToggle = shell.themeToggle('light')
+  const themeToggle = appShell.themeToggle('light')
   await themeToggle.focus()
 
   await expect(async () => {
-    await page.keyboard.press('Enter')
-    await expect(shell.themeToggle('dark')).toBeVisible()
+    await appShell.page.keyboard.press('Enter')
+    await expect(appShell.themeToggle('dark')).toBeVisible()
   }).toPass()
 
-  await expect(shell.themeToggle('dark')).toHaveAttribute('aria-pressed', 'true')
+  await expect(appShell.themeToggle('dark')).toHaveAttribute('aria-pressed', 'true')
 })

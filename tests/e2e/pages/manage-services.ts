@@ -9,28 +9,45 @@ import {
 } from '../e2e-helpers'
 
 export class ManageServicesPage {
-  constructor(private readonly page: Page) {}
+  readonly page: Page
+  readonly heading: Locator
+  readonly existingServicesHeading: Locator
+  readonly titleField: Locator
+  readonly categoryField: Locator
+  readonly descriptionField: Locator
+  readonly createButton: Locator
+  readonly saveButton: Locator
+  readonly successMessage: Locator
+  readonly searchField: Locator
+  readonly servicesTable: Locator
+  readonly firstDeleteButton: Locator
+  readonly firstEditLink: Locator
+  readonly deleteDialog: Locator
+  readonly deleteConfirmButton: Locator
+  readonly errorSummary: Locator
+  readonly titleError: Locator
 
-  heading = this.page.getByRole('heading', { name: copy.manageServices.heading })
-  existingServicesHeading = this.page.getByRole('heading', { name: copy.manageServices.existingServicesHeading })
-  titleField = this.page.getByLabel('Service title', { exact: false })
-  categoryField = this.page.getByLabel('Category', { exact: false })
-  descriptionField = this.page.getByLabel('Description', { exact: false })
-  createButton = this.page.getByRole('button', { name: copy.manageServices.createButton })
-  saveButton = this.page.getByRole('button', { name: copy.manageServices.saveButton })
-  successMessage = this.page.getByRole('status')
-  searchField = this.page.locator('#existingServicesSearch')
-  servicesTable = this.page.locator('#existing-services-table')
-  firstDeleteButton = this.servicesTable.getByRole('button', { name: copy.deleteDialog.deleteButton }).first()
-  firstEditLink = this.page.getByRole('link', { name: copy.manageServices.editLink }).first()
-  deleteDialog = this.page.getByRole('alertdialog')
-  deleteConfirmButton = this.page.getByRole('button', { name: copy.deleteDialog.confirmButton })
-
-  errorSummary = this.page.getByRole('alert').filter({
-    has: this.page.getByRole('heading', { name: copy.validation.problemHeading }),
-  })
-
-  titleError = this.page.locator('#title-error')
+  constructor(page: Page) {
+    this.page = page
+    this.heading = page.getByRole('heading', { name: copy.manageServices.heading })
+    this.existingServicesHeading = page.getByRole('heading', { name: copy.manageServices.existingServicesHeading })
+    this.titleField = page.getByLabel('Service title', { exact: false })
+    this.categoryField = page.getByLabel('Category', { exact: false })
+    this.descriptionField = page.getByLabel('Description', { exact: false })
+    this.createButton = page.getByRole('button', { name: copy.manageServices.createButton })
+    this.saveButton = page.getByRole('button', { name: copy.manageServices.saveButton })
+    this.successMessage = page.getByRole('status')
+    this.searchField = page.locator('#existingServicesSearch')
+    this.servicesTable = page.locator('#existing-services-table')
+    this.firstDeleteButton = this.servicesTable.getByRole('button', { name: copy.deleteDialog.deleteButton }).first()
+    this.firstEditLink = page.getByRole('link', { name: copy.manageServices.editLink }).first()
+    this.deleteDialog = page.getByRole('alertdialog')
+    this.deleteConfirmButton = page.getByRole('button', { name: copy.deleteDialog.confirmButton })
+    this.errorSummary = page.getByRole('alert').filter({
+      has: page.getByRole('heading', { name: copy.validation.problemHeading }),
+    })
+    this.titleError = page.locator('#title-error')
+  }
 
   async goto(): Promise<void> {
     await waitForManageServicesClientReady(this.page, () => this.page.goto(appPages.manageServices.path))

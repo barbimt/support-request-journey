@@ -1,24 +1,36 @@
-import { expect, type Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { copy } from '../copy'
 import { appPages } from '../routes'
 import { waitForPageReady } from '../e2e-helpers'
 
 export class RequestSupportPage {
-  constructor(private readonly page: Page) {}
+  readonly page: Page
+  readonly fullName: Locator
+  readonly email: Locator
+  readonly supportFor: Locator
+  readonly supportType: Locator
+  readonly preferredContactEmail: Locator
+  readonly message: Locator
+  readonly consent: Locator
+  readonly submitButton: Locator
+  readonly successMessage: Locator
+  readonly errorSummary: Locator
 
-  fullName = this.page.getByLabel('Full name', { exact: false })
-  email = this.page.getByLabel('Email address', { exact: false })
-  supportFor = this.page.locator('#supportFor')
-  supportType = this.page.locator('#supportType')
-  preferredContactEmail = this.page.locator('input[type="radio"][name="preferredContact"][value="email"]')
-  message = this.page.locator('#message')
-  consent = this.page.locator('#consent')
-  submitButton = this.page.getByRole('button', { name: copy.supportRequest.submitButton })
-  successMessage = this.page.getByRole('status')
-
-  errorSummary = this.page.getByRole('alert').filter({
-    has: this.page.getByRole('heading', { name: copy.validation.problemHeading }),
-  })
+  constructor(page: Page) {
+    this.page = page
+    this.fullName = page.getByLabel('Full name', { exact: false })
+    this.email = page.getByLabel('Email address', { exact: false })
+    this.supportFor = page.locator('#supportFor')
+    this.supportType = page.locator('#supportType')
+    this.preferredContactEmail = page.locator('input[type="radio"][name="preferredContact"][value="email"]')
+    this.message = page.locator('#message')
+    this.consent = page.locator('#consent')
+    this.submitButton = page.getByRole('button', { name: copy.supportRequest.submitButton })
+    this.successMessage = page.getByRole('status')
+    this.errorSummary = page.getByRole('alert').filter({
+      has: page.getByRole('heading', { name: copy.validation.problemHeading }),
+    })
+  }
 
   async goto(): Promise<void> {
     await this.page.goto(appPages.requestSupport.path)

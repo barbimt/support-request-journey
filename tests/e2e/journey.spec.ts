@@ -1,15 +1,10 @@
-import { expect, test } from '@playwright/test'
 import { copy } from './copy'
-import { AppShellPage } from './pages/app-shell.page'
-import { RequestSupportPage } from './pages/request-support.page'
+import { expect, test } from './fixtures'
 import { appPages } from './routes'
 import { waitForPageReady, waitForServiceCards } from './e2e-helpers'
 
-test('support request journey from home to success', async ({ page }) => {
-  const shell = new AppShellPage(page)
-  const requestSupport = new RequestSupportPage(page)
-
-  await shell.goto('home')
+test('support request journey from home to success', async ({ page, appShell, requestSupport }) => {
+  await appShell.goto('home')
 
   await page.getByRole('link', { name: copy.nav.browseServices }).click()
   await expect(page).toHaveURL(appPages.services.path)
@@ -20,7 +15,7 @@ test('support request journey from home to success', async ({ page }) => {
   await expect(page).toHaveURL(/\/services\/.+/)
   await waitForPageReady(page)
 
-  await shell.mainContent.getByRole('link', { name: copy.services.requestSupportFromDetail }).click()
+  await appShell.mainContent.getByRole('link', { name: copy.services.requestSupportFromDetail }).click()
   await expect(page).toHaveURL(appPages.requestSupport.path)
   await waitForPageReady(page)
 

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page, type Response } from '@playwright/test'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -6,7 +6,6 @@ async function waitForManagePageReady(page: Page): Promise<void> {
   await page.locator('#main-content').waitFor({ state: 'visible' })
   await page.getByRole('heading', { name: 'Manage services' }).waitFor({ state: 'visible' })
   await page.locator('#title').waitFor({ state: 'visible' })
-  await page.waitForLoadState('networkidle')
 }
 
 async function fillServiceTitle(page: Page, title: string): Promise<void> {
@@ -46,11 +45,28 @@ async function openEditFromSuccessLink(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/manage\/services\//)
 }
 
+function isServicesListResponse(response: Response): boolean {
+  const url = new URL(response.url())
+
+  return response.request().method() === 'GET'
+    && url.pathname === '/api/services'
+    && response.ok()
+}
+
+function serviceRowInTable(page: Page, title: string) {
+  return page
+    .locator('#existing-services-table tbody')
+    .getByRole('row', { name: new RegExp(title) })
+}
+
 async function findExistingServiceRow(page: Page, title: string) {
   await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
   await page.locator('#existingServicesSearch').fill(title)
 
-  return page.getByRole('row', { name: new RegExp(title) })
+  const row = serviceRowInTable(page, title)
+  await expect(row).toBeVisible({ timeout: 15_000 })
+
+  return row
 }
 
 test('create service from manage page', async ({ page }) => {
@@ -106,13 +122,13 @@ test('delete service from manage page', async ({ page }) => {
   const serviceId = href.replace('/services/', '')
   const row = await findExistingServiceRow(page, title)
 
-  await expect(row).toBeVisible({ timeout: 15_000 })
   await row.getByRole('button', { name: 'Delete' }).click()
 
   await expect(page.getByRole('alertdialog')).toBeVisible()
   await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
 
-  const deleteResponse = page.waitForResponse(
+  // Playwright docs: start waiting for the response before the action that triggers it.
+  const deleteResponsePromise = page.waitForResponse(
     (response) =>
       response.request().method() === 'DELETE'
       && response.url().includes(`/api/services/${serviceId}`)
@@ -120,8 +136,12 @@ test('delete service from manage page', async ({ page }) => {
   )
 
   await page.getByRole('button', { name: 'Yes, delete service' }).click()
-  await deleteResponse
+  await deleteResponsePromise
+  await page.waitForResponse(isServicesListResponse)
 
-  await expect(page.getByRole('alertdialog')).not.toBeVisible()
-  await expect(row).not.toBeVisible({ timeout: 15_000 })
+  await expect(page.getByRole('alertdialog')).toBeHidden()
+  await expect(
+    serviceRowInTable(page, title),
+    'deleted service should disappear from the existing services table',
+  ).toHaveCount(0, { timeout: 15_000 })
 })

@@ -1,69 +1,75 @@
-import { devices, expect, test, type Page } from '@playwright/test'
+import { expect, test } from './fixtures'
+import { setTheme } from './e2e-helpers'
 
-const mobileViewport = devices['iPhone 13'].viewport!
+test('skip link moves focus to main content', async ({ appShell }) => {
+  await appShell.goto('home')
 
-test('skip link moves focus to main content', async ({ page }) => {
-  await page.goto('/')
-  await waitForPageReady(page)
+  await appShell.page.keyboard.press('Tab')
+  await expect(appShell.skipLink).toBeFocused()
 
-  await page.keyboard.press('Tab')
-  await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused()
-
-  await page.keyboard.press('Enter')
-  await expect(page.locator('#main-content')).toBeFocused()
+  await appShell.page.keyboard.press('Enter')
+  await expect(appShell.mainContent).toBeFocused()
 })
 
-test('mobile menu supports keyboard open, focus, and escape close', async ({ page }) => {
-  await page.setViewportSize(mobileViewport)
-  await page.goto('/')
-  await waitForPageReady(page)
-
-  const menuToggle = page.getByRole('button', { name: /^(Open|Close) menu$/ })
+test('mobile menu supports keyboard open, focus, and escape close', async ({ appShell }) => {
+  await appShell.setMobileViewport()
+  await appShell.goto('home')
 
   await expect(async () => {
-    await menuToggle.focus()
-    await expect(menuToggle).toBeFocused()
-    await page.keyboard.press('Space')
-    await expect(menuToggle).toHaveAttribute('aria-expanded', 'true')
+    await appShell.menuToggle.focus()
+    await expect(appShell.menuToggle).toBeFocused()
+    await appShell.page.keyboard.press('Space')
+    await expect(appShell.menuToggle).toHaveAttribute('aria-expanded', 'true')
   }).toPass()
 
-  await expect(page.locator('#main-nav').getByRole('link', { name: 'Home' })).toBeFocused()
+  await expect(appShell.homeNavLink).toBeFocused()
 
-  await page.keyboard.press('Escape')
+  await appShell.page.keyboard.press('Escape')
 
-  await expect(menuToggle).toHaveAttribute('aria-expanded', 'false')
-  await expect(menuToggle).toBeFocused()
+  await expect(appShell.menuToggle).toHaveAttribute('aria-expanded', 'false')
+  await expect(appShell.menuToggle).toBeFocused()
 })
 
-test('mobile menu traps focus with Tab from last to first link', async ({ page }) => {
-  await page.setViewportSize(mobileViewport)
-  await page.goto('/')
-  await waitForPageReady(page)
+test('mobile menu traps focus with Tab from last to first link', async ({ appShell }) => {
+  await appShell.setMobileViewport()
+  await appShell.goto('home')
+  await appShell.openMobileMenu()
 
-  await openMobileMenu(page)
+  await appShell.requestSupportNavLink.focus()
+  await appShell.page.keyboard.press('Tab')
 
-  const requestSupportLink = page.locator('#main-nav').getByRole('link', { name: 'Request support' })
-  await requestSupportLink.focus()
-  await page.keyboard.press('Tab')
-
-  await expect(page.locator('#main-nav').getByRole('link', { name: 'Home' })).toBeFocused()
+  await expect(appShell.homeNavLink).toBeFocused()
 })
 
-async function waitForPageReady(page: Page): Promise<void> {
-  await page.locator('#main-content').waitFor({ state: 'visible' })
-  await page.locator('header .site-title').waitFor({ state: 'visible' })
-}
+test('validation summary receives focus after invalid submit', async ({ requestSupport }) => {
+  await requestSupport.submitEmpty()
 
-async function openMobileMenu(page: Page): Promise<void> {
-  const menuToggle = page.getByRole('button', { name: /^(Open|Close) menu$/ })
+  await expect(requestSupport.errorSummary).toBeFocused()
+})
 
-  await expect(menuToggle).toBeVisible()
+test('delete dialog closes with Escape and returns focus to trigger', async ({ appShell, manageServices }) => {
+  await manageServices.openDeleteDialogForFirstService()
+
+  await expect(manageServices.deleteDialog).toBeVisible()
+  await expect(manageServices.deleteConfirmButton).toBeFocused()
+
+  await appShell.page.keyboard.press('Escape')
+
+  await expect(manageServices.deleteDialog).toBeHidden()
+  await expect(manageServices.firstDeleteButton).toBeFocused()
+})
+
+test('theme toggle updates pressed state with keyboard', async ({ appShell }) => {
+  await setTheme(appShell.page, 'light')
+  await appShell.goto('home')
+
+  const themeToggle = appShell.themeToggle('light')
+  await themeToggle.focus()
 
   await expect(async () => {
-    if ((await menuToggle.getAttribute('aria-expanded')) !== 'true') {
-      await menuToggle.click()
-    }
-
-    await expect(menuToggle).toHaveAttribute('aria-expanded', 'true')
+    await appShell.page.keyboard.press('Enter')
+    await expect(appShell.themeToggle('dark')).toBeVisible()
   }).toPass()
-}
+
+  await expect(appShell.themeToggle('dark')).toHaveAttribute('aria-pressed', 'true')
+})

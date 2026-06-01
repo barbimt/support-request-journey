@@ -111,4 +111,8 @@ const { data: service } = await useAsyncData(
   () => getServiceById(String(route.params.id)),
   { default: () => null },
 )
+
+useHead({
+  title: computed(() => service.value?.title ?? 'Service not found'),
+})
 </script>

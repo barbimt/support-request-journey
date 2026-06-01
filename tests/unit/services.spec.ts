@@ -9,7 +9,7 @@ describe('services filtering', () => {
   it('filters services by search text', () => {
     const { filterServices } = useServices()
 
-    const results = filterServices(mockServices, {
+    const results = filterServices([...mockServices], {
       search: 'mental',
       category: 'all',
     })
@@ -21,7 +21,7 @@ describe('services filtering', () => {
 
 describe('services list pagination', () => {
   it('returns six services per page on the public list', () => {
-    const filteredServices = ref(mockServices)
+    const filteredServices = ref([...mockServices])
     const { paginatedItems, totalPages } = usePagination(
       filteredServices,
       SERVICES_PUBLIC_PAGE_SIZE,

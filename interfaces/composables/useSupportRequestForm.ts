@@ -8,6 +8,7 @@ export interface UseSupportRequestFormReturn {
   submitSuccess: Ref<boolean>
   successMessage: Ref<string>
   serverError: Ref<string>
+  serverErrorRef: Ref<HTMLElement | null>
   errorSummaryRef: Ref<{ focus: () => void } | null>
   supportForOptions: typeof SUPPORT_FOR_OPTIONS
   contactOptions: typeof CONTACT_OPTIONS

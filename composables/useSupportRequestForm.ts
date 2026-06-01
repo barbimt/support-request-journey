@@ -22,6 +22,7 @@ export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
   const submitSuccess = ref(false)
   const successMessage = ref('')
   const serverError = ref('')
+  const serverErrorRef = ref<HTMLElement | null>(null)
   const errorSummaryRef = ref<{ focus: () => void } | null>(null)
 
   const errorFor = (field: keyof SupportRequestForm): string | undefined =>
@@ -36,6 +37,11 @@ export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
   const focusErrorSummary = async (): Promise<void> => {
     await nextTick()
     errorSummaryRef.value?.focus()
+  }
+
+  const focusServerError = async (): Promise<void> => {
+    await nextTick()
+    serverErrorRef.value?.focus()
   }
 
   const submitRequest = (): Promise<SubmitSupportRequestResult> => {
@@ -62,7 +68,7 @@ export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
 
     if ('serverError' in result) {
       serverError.value = result.serverError
-      await focusErrorSummary()
+      await focusServerError()
     }
   }
 
@@ -97,6 +103,7 @@ export const useSupportRequestForm = (): UseSupportRequestFormReturn => {
     submitSuccess,
     successMessage,
     serverError,
+    serverErrorRef,
     errorSummaryRef,
     supportForOptions: SUPPORT_FOR_OPTIONS,
     contactOptions: CONTACT_OPTIONS,

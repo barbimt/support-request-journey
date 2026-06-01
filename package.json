@@ -12,10 +12,10 @@
     "test:unit": "vitest run",
     "test:backend": "bash scripts/test-backend.sh",
     "dev:backend": "bash scripts/dev-backend.sh",
-    "test:e2e": "playwright test",
-    "test:a11y": "playwright test tests/e2e/accessibility.spec.ts",
-    "test:a11y:axe": "playwright test tests/e2e/accessibility.spec.ts",
-    "test:a11y:pa11y": "pa11y-ci --config .pa11yci"
+    "test:e2e": "playwright test --project=e2e",
+    "test:a11y": "playwright test --project=a11y",
+    "test:a11y:pa11y": "pa11y-ci --config .pa11yci",
+    "test:all": "playwright test"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",

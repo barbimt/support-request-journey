@@ -4,7 +4,6 @@
       <article
         class="error-page error-page-card"
         :class="isNotFound ? 'error-page-card--not-found' : 'error-page-card--fault'"
-        role="alert"
         aria-labelledby="error-heading"
       >
         <header class="error-page-status">

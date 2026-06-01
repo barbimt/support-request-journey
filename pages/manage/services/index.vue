@@ -144,7 +144,7 @@
                           Edit
                         </AppButton>
                         <AppButton
-                          v-if="confirmDeleteId !== service.id"
+                          v-show="confirmDeleteId !== service.id"
                           variant="danger"
                           size="compact"
                           :disabled="isDeleting"
@@ -281,7 +281,7 @@ const closeDeleteConfirm = (returnFocus = true): void => {
 }
 
 const focusDeleteConfirmButton = (): void => {
-  const confirmButton = deleteDialogRef.value?.querySelector('button')
+  const confirmButton = document.querySelector<HTMLButtonElement>('[role="alertdialog"] button')
   confirmButton?.focus()
 }
 
@@ -294,9 +294,9 @@ const onDeleteDialogKeydown = (event: KeyboardEvent): void => {
 
 watch(confirmDeleteId, async (id) => {
   if (id) {
+    document.addEventListener('keydown', onDeleteDialogKeydown)
     await nextTick()
     focusDeleteConfirmButton()
-    document.addEventListener('keydown', onDeleteDialogKeydown)
     return
   }
 
@@ -373,4 +373,6 @@ const handleDelete = async (id: string): Promise<void> => {
     isDeleting.value = false
   }
 }
+
+useHead({ title: 'Manage services' })
 </script>

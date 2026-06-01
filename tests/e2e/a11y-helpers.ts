@@ -1,25 +1,27 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, type Page } from '@playwright/test'
 import {
+  appPages,
+  axeScenarioLabel,
+  mobileMenuAxePages,
+  type AppPageId,
+} from './routes'
+import {
   assertDarkThemeApplied,
   mobileViewport,
   openMobileMenu,
   setTheme,
-  visitPage,
+  visitAppPage,
   waitForPageReady,
   waitForServiceCards,
-  type PageVisitOptions,
 } from './e2e-helpers'
 
 export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] as const
 
 export {
   mobileViewport,
-  openDeleteConfirmDialog,
-  openMobileMenu,
   setTheme,
-  submitEmptyManageService,
-  submitEmptySupportRequest,
+  visitAppPage,
   waitForManageServicesTable,
   waitForPageReady,
   waitForServiceCards,
@@ -47,33 +49,35 @@ export async function assertNoAxeViolations(
   ).toEqual([])
 }
 
-export type A11yScanOptions = PageVisitOptions & {
-  name: string
+export type A11yScanOptions = {
+  page: AppPageId
+  theme?: 'light' | 'dark'
+  viewport?: 'desktop' | 'mobile'
 }
 
 export async function visitAndAssertNoViolations(page: Page, options: A11yScanOptions): Promise<void> {
-  const { name, theme = 'light', viewport = 'desktop' } = options
+  const { page: pageId, theme = 'light', viewport = 'desktop' } = options
 
-  await visitPage(page, options)
-  await assertNoAxeViolations(page, name, { theme, viewport })
+  await visitAppPage(page, { page: pageId, theme, viewport })
+  await assertNoAxeViolations(page, appPages[pageId].label, { theme, viewport })
 }
 
 export async function visitMobileMenuOpenAndAssertNoViolations(
   page: Page,
   options: {
-    path: '/' | '/services'
-    name: string
+    page: AppPageId
     theme: 'light' | 'dark'
   },
 ): Promise<void> {
-  const { path, name, theme } = options
+  const { page: pageId, theme } = options
+  const { path, label } = appPages[pageId]
 
   await page.setViewportSize(mobileViewport)
   await setTheme(page, theme)
   await page.goto(path)
   await waitForPageReady(page)
 
-  if (path === '/services') {
+  if (pageId === 'services') {
     await waitForServiceCards(page)
   }
 
@@ -82,8 +86,10 @@ export async function visitMobileMenuOpenAndAssertNoViolations(
   }
 
   await openMobileMenu(page)
-  await assertNoAxeViolations(page, `${name} (mobile menu open)`, { theme, viewport: 'mobile' })
+  await assertNoAxeViolations(page, `${label} (mobile menu open)`, { theme, viewport: 'mobile' })
 }
+
+export { axeScenarioLabel, mobileMenuAxePages }
 
 export function formatViolations(
   pageName: string,

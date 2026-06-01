@@ -1,92 +1,81 @@
 import { expect, test, type Page } from '@playwright/test'
-import {
-  fillServiceTitle,
-  isServicesListResponse,
-  waitForManagePageReady,
-} from './e2e-helpers'
+import { copy } from './copy'
+import { AppShellPage } from './pages/app-shell.page'
+import { ManageServicesPage } from './pages/manage-services.page'
+import { RequestSupportPage } from './pages/request-support.page'
+import { appPages } from './routes'
+import { isServicesListResponse } from './e2e-helpers'
 
 test.describe.configure({ mode: 'serial' })
 
 async function createManageService(page: Page, title: string): Promise<void> {
-  await page.goto('/services')
-  await page.getByRole('link', { name: 'Add a service to the directory' }).click()
-  await waitForManagePageReady(page)
+  const manage = new ManageServicesPage(page)
 
-  await fillServiceTitle(page, title)
-  await page.locator('#category').selectOption('mental-health')
-  await page.locator('#description').fill('E2E test service description.')
+  await page.goto(appPages.services.path)
+  await page.getByRole('link', { name: copy.manageServices.addServiceLink }).click()
+  await manage.waitForFormReady()
 
-  await page.getByRole('button', { name: 'Create service' }).click()
-  await expect(page.getByRole('status')).toContainText(title, { timeout: 15_000 })
-  await expect(page.getByRole('status')).toContainText('has been added.')
+  await manage.fillTitle(title)
+  await manage.categoryField.selectOption('mental-health')
+  await manage.descriptionField.fill('E2E test service description.')
+  await manage.createButton.click()
+
+  await expect(manage.successMessage).toContainText(title, { timeout: 15_000 })
+  await expect(manage.successMessage).toContainText(copy.manageServices.serviceAddedSuffix)
 }
 
 async function openEditFromSuccessLink(page: Page): Promise<void> {
-  await page.getByRole('status').getByRole('link', { name: 'View service details' }).click()
-  await page.getByRole('link', { name: 'Edit service' }).click()
+  await page.getByRole('status').getByRole('link', { name: copy.manageServices.viewDetailsLink }).click()
+  await page.getByRole('link', { name: copy.manageServices.editServiceLink }).click()
   await expect(page).toHaveURL(/\/manage\/services\//)
 }
 
-function serviceRowInTable(page: Page, title: string) {
-  return page
-    .locator('#existing-services-table tbody')
-    .getByRole('row', { name: new RegExp(title) })
-}
-
-async function findExistingServiceRow(page: Page, title: string) {
-  await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
-  await page.locator('#existingServicesSearch').fill(title)
-
-  const row = serviceRowInTable(page, title)
-  await expect(row).toBeVisible({ timeout: 15_000 })
-
-  return row
-}
-
 test('create service from manage page', async ({ page }) => {
-  await page.goto('/services')
+  const manage = new ManageServicesPage(page)
 
-  await page.getByRole('link', { name: 'Add a service to the directory' }).click()
-  await expect(page).toHaveURL('/manage/services')
-  await waitForManagePageReady(page)
+  await page.goto(appPages.services.path)
+  await page.getByRole('link', { name: copy.manageServices.addServiceLink }).click()
+  await expect(page).toHaveURL(appPages.manageServices.path)
+  await manage.waitForFormReady()
 
-  await page.getByRole('button', { name: 'Create service' }).click()
+  await manage.createButton.click()
 
-  await expect(page.getByRole('heading', { name: 'There is a problem' })).toBeVisible()
-  await expect(page.locator('#title-error')).toContainText('Enter a service title.')
+  await expect(page.getByRole('heading', { name: copy.validation.problemHeading })).toBeVisible()
+  await expect(manage.titleError).toContainText(copy.validation.serviceTitleRequired)
 
-  await page.getByLabel('Service title').fill('Community wellbeing drop-in')
-  await page.getByLabel('Category').selectOption('mental-health')
-  await page.getByLabel('Description').fill('Weekly drop-in sessions with trained wellbeing advisors.')
+  await manage.titleField.fill('Community wellbeing drop-in')
+  await manage.categoryField.selectOption('mental-health')
+  await manage.descriptionField.fill('Weekly drop-in sessions with trained wellbeing advisors.')
+  await manage.createButton.click()
 
-  await page.getByRole('button', { name: 'Create service' }).click()
-
-  await expect(page.getByRole('status')).toContainText('Community wellbeing drop-in')
-  await expect(page.getByRole('status')).toContainText('has been added.')
+  await expect(manage.successMessage).toContainText('Community wellbeing drop-in')
+  await expect(manage.successMessage).toContainText(copy.manageServices.serviceAddedSuffix)
 })
 
 test('update service from manage page', async ({ page }) => {
+  const manage = new ManageServicesPage(page)
   const title = `E2E update ${Date.now()}`
   const updatedTitle = `${title} updated`
 
   await createManageService(page, title)
   await openEditFromSuccessLink(page)
 
-  await fillServiceTitle(page, updatedTitle)
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await manage.fillTitle(updatedTitle)
+  await manage.saveButton.click()
 
-  await expect(page.getByRole('status')).toContainText(updatedTitle, { timeout: 15_000 })
-  await expect(page.getByRole('status')).toContainText('has been updated.')
+  await expect(manage.successMessage).toContainText(updatedTitle, { timeout: 15_000 })
+  await expect(manage.successMessage).toContainText(copy.manageServices.serviceUpdatedSuffix)
 })
 
 test('delete service from manage page', async ({ page }) => {
+  const manage = new ManageServicesPage(page)
   const title = `E2E delete ${Date.now()}`
 
   await createManageService(page, title)
 
   const href = await page
     .getByRole('status')
-    .getByRole('link', { name: 'View service details' })
+    .getByRole('link', { name: copy.manageServices.viewDetailsLink })
     .getAttribute('href')
 
   if (!href) {
@@ -94,12 +83,12 @@ test('delete service from manage page', async ({ page }) => {
   }
 
   const serviceId = href.replace('/services/', '')
-  const row = await findExistingServiceRow(page, title)
+  const row = await manage.findServiceRow(title)
 
-  await row.getByRole('button', { name: 'Delete' }).click()
+  await row.getByRole('button', { name: copy.deleteDialog.deleteButton }).click()
 
-  await expect(page.getByRole('alertdialog')).toBeVisible()
-  await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
+  await expect(manage.deleteDialog).toBeVisible()
+  await expect(manage.deleteDialog).toContainText(copy.deleteDialog.title)
 
   const deleteResponsePromise = page.waitForResponse(
     (response) =>
@@ -108,13 +97,13 @@ test('delete service from manage page', async ({ page }) => {
       && response.ok(),
   )
 
-  await page.getByRole('button', { name: 'Yes, delete service' }).click()
+  await manage.deleteConfirmButton.click()
   await deleteResponsePromise
   await page.waitForResponse(isServicesListResponse)
 
-  await expect(page.getByRole('alertdialog')).toBeHidden()
+  await expect(manage.deleteDialog).toBeHidden()
   await expect(
-    serviceRowInTable(page, title),
+    manage.serviceRow(title),
     'deleted service should disappear from the existing services table',
   ).toHaveCount(0, { timeout: 15_000 })
 })

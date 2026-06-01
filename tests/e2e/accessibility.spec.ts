@@ -1,67 +1,36 @@
 import { expect, test } from '@playwright/test'
 import {
   assertNoAxeViolations,
-  openDeleteConfirmDialog,
-  submitEmptyManageService,
-  submitEmptySupportRequest,
   visitAndAssertNoViolations,
   visitMobileMenuOpenAndAssertNoViolations,
 } from './a11y-helpers'
+import { copy } from './copy'
+import { ManageServicesPage } from './pages/manage-services.page'
+import { RequestSupportPage } from './pages/request-support.page'
+import {
+  axePageScenarios,
+  axeScenarioLabel,
+  errorPages,
+  mobileMenuAxePages,
+} from './routes'
 import {
   navigateToFirstServiceDetail,
   setTheme,
   visitPage,
-  waitForManageServicesTable,
   waitForPageReady,
 } from './e2e-helpers'
 
-const basePages = [
-  { name: 'home', path: '/' },
-  { name: 'services', path: '/services' },
-  { name: 'request support', path: '/request-support' },
-  { name: 'manage services', path: '/manage/services' },
-] as const
-
-const mobileMenuPages = [
-  { name: 'home', path: '/' as const },
-  { name: 'services', path: '/services' as const },
-] as const
-
-const pageScans = [
-  ...basePages.map(({ name, path }) => ({
-    name,
-    path,
-    theme: 'light' as const,
-    viewport: 'desktop' as const,
-    label: `${name} page (light mode, desktop)`,
-  })),
-  {
-    name: 'home',
-    path: '/',
-    theme: 'dark' as const,
-    viewport: 'desktop' as const,
-    label: 'home page (dark mode, desktop)',
-  },
-  ...(['home', 'services'] as const).map((name) => ({
-    name,
-    path: name === 'home' ? '/' : '/services',
-    theme: 'light' as const,
-    viewport: 'mobile' as const,
-    label: `${name} page (light mode, mobile)`,
-  })),
-]
-
 test.describe('pages', () => {
-  for (const scan of pageScans) {
-    test(`${scan.label} has no accessibility violations`, async ({ page }) => {
-      await visitAndAssertNoViolations(page, scan)
+  for (const scenario of axePageScenarios) {
+    test(`${axeScenarioLabel(scenario)} has no accessibility violations`, async ({ page }) => {
+      await visitAndAssertNoViolations(page, scenario)
     })
   }
 
   for (const theme of ['light', 'dark'] as const) {
-    for (const { name, path } of mobileMenuPages) {
-      test(`${name} page with mobile menu open (${theme} mode) has no accessibility violations`, async ({ page }) => {
-        await visitMobileMenuOpenAndAssertNoViolations(page, { path, name, theme })
+    for (const pageId of mobileMenuAxePages) {
+      test(`${axeScenarioLabel({ page: pageId, theme, viewport: 'mobile' })} with menu open has no accessibility violations`, async ({ page }) => {
+        await visitMobileMenuOpenAndAssertNoViolations(page, { page: pageId, theme })
       })
     }
   }
@@ -73,10 +42,11 @@ test.describe('pages', () => {
   })
 
   test('edit service page (light mode, desktop) has no accessibility violations', async ({ page }) => {
-    await setTheme(page, 'light')
-    await waitForManageServicesTable(page)
+    const manage = new ManageServicesPage(page)
 
-    await page.getByRole('link', { name: 'Edit' }).first().click()
+    await setTheme(page, 'light')
+    await manage.waitForTable()
+    await manage.firstEditLink.click()
     await expect(page).toHaveURL(/\/manage\/services\/.+/)
     await waitForPageReady(page)
 
@@ -86,28 +56,30 @@ test.describe('pages', () => {
 
 test.describe('error pages', () => {
   for (const theme of ['light', 'dark'] as const) {
-    test(`404 error page (${theme} mode) has no accessibility violations`, async ({ page }) => {
-      await visitPage(page, { path: '/this-route-does-not-exist', theme })
+    test(`${errorPages.notFound.label} (${theme} mode) has no accessibility violations`, async ({ page }) => {
+      await visitPage(page, { path: errorPages.notFound.path, theme })
 
-      await expect(page.getByRole('heading', { name: 'This page does not exist' })).toBeVisible()
+      await expect(page.getByRole('heading', { name: copy.errors.notFound404Heading })).toBeVisible()
 
-      await assertNoAxeViolations(page, '404 error page', { theme })
+      await assertNoAxeViolations(page, errorPages.notFound.label, { theme })
     })
   }
 
-  test('service not found page has no accessibility violations', async ({ page }) => {
-    await page.goto('/services/nonexistent-id-999')
+  test(`${errorPages.serviceNotFound.label} has no accessibility violations`, async ({ page }) => {
+    await page.goto(errorPages.serviceNotFound.path)
     await waitForPageReady(page)
 
-    await expect(page.getByRole('heading', { name: 'Service not found' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: copy.errors.serviceNotFoundHeading })).toBeVisible()
 
-    await assertNoAxeViolations(page, 'service not found')
+    await assertNoAxeViolations(page, errorPages.serviceNotFound.label)
   })
 })
 
 test.describe('interactive states', () => {
   test('request support validation state has no accessibility violations', async ({ page }) => {
-    await submitEmptySupportRequest(page)
+    const requestSupport = new RequestSupportPage(page)
+
+    await requestSupport.submitEmpty()
 
     await expect(page.locator('[aria-invalid="true"]').first()).toBeVisible()
 
@@ -115,17 +87,21 @@ test.describe('interactive states', () => {
   })
 
   test('manage services validation state has no accessibility violations', async ({ page }) => {
-    await submitEmptyManageService(page)
+    const manage = new ManageServicesPage(page)
 
-    await expect(page.locator('#title-error')).toContainText('Enter a service title.')
+    await manage.submitEmptyCreate()
+
+    await expect(manage.titleError).toContainText(copy.validation.serviceTitleRequired)
 
     await assertNoAxeViolations(page, 'manage services (validation errors)')
   })
 
   test('delete confirmation dialog has no accessibility violations', async ({ page }) => {
-    await openDeleteConfirmDialog(page)
+    const manage = new ManageServicesPage(page)
 
-    await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
+    await manage.openDeleteDialogForFirstService()
+
+    await expect(manage.deleteDialog).toContainText(copy.deleteDialog.title)
 
     await assertNoAxeViolations(page, 'manage services (delete dialog open)')
   })

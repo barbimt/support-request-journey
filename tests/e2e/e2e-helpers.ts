@@ -1,4 +1,6 @@
 import { devices, expect, type Page, type Response } from '@playwright/test'
+import { copy } from './copy'
+import { appPages, type AppPageId } from './routes'
 
 export const mobileViewport = devices['iPhone 13'].viewport!
 
@@ -9,16 +11,16 @@ export async function waitForPageReady(page: Page): Promise<void> {
 
 export async function waitForManagePageReady(page: Page): Promise<void> {
   await waitForPageReady(page)
-  await page.getByRole('heading', { name: 'Manage services' }).waitFor({ state: 'visible' })
+  await page.getByRole('heading', { name: copy.manageServices.heading }).waitFor({ state: 'visible' })
   await page.locator('#title').waitFor({ state: 'visible' })
 }
 
 export async function waitForServiceCards(page: Page): Promise<void> {
   await expect(async () => {
-    const detailsLink = page.getByRole('link', { name: /View service details for/i }).first()
+    const detailsLink = page.getByRole('link', { name: copy.services.viewDetailsLink }).first()
 
     if (!(await detailsLink.isVisible())) {
-      const retryButton = page.getByRole('button', { name: 'Try again' })
+      const retryButton = page.getByRole('button', { name: copy.manageServices.tryAgainButton })
 
       if (await retryButton.isVisible()) {
         await retryButton.click()
@@ -56,19 +58,19 @@ export async function waitForManageServicesClientReady(
 }
 
 export async function waitForManageServicesTable(page: Page): Promise<void> {
-  await waitForManageServicesClientReady(page, () => page.goto('/manage/services'))
+  await waitForManageServicesClientReady(page, () => page.goto(appPages.manageServices.path))
 
   await expect(async () => {
-    if (await page.getByRole('heading', { name: 'We could not load this page' }).isVisible()) {
+    if (await page.getByRole('heading', { name: copy.errors.pageLoadHeading }).isVisible()) {
       await waitForManageServicesClientReady(page, () => page.reload())
     }
 
     await waitForManagePageReady(page)
 
-    const editLink = page.getByRole('link', { name: 'Edit' }).first()
+    const editLink = page.getByRole('link', { name: copy.manageServices.editLink }).first()
 
     if (!(await editLink.isVisible())) {
-      const retryButton = page.getByRole('button', { name: 'Try again' })
+      const retryButton = page.getByRole('button', { name: copy.manageServices.tryAgainButton })
 
       if (await retryButton.isVisible()) {
         await retryButton.click()
@@ -79,46 +81,10 @@ export async function waitForManageServicesTable(page: Page): Promise<void> {
     }
 
     await expect(editLink).toBeVisible()
-    await expect(page.locator('#existing-services-table').getByRole('button', { name: 'Delete' }).first()).toBeVisible()
+    await expect(
+      page.locator('#existing-services-table').getByRole('button', { name: copy.deleteDialog.deleteButton }).first(),
+    ).toBeVisible()
   }).toPass({ timeout: 30_000 })
-}
-
-export async function submitEmptySupportRequest(page: Page): Promise<void> {
-  await page.goto('/request-support')
-  await waitForPageReady(page)
-
-  await expect(async () => {
-    await page.locator('#fullName').click()
-    await page.getByRole('button', { name: 'Send support request' }).click()
-    await expect(page.getByRole('heading', { name: 'There is a problem' })).toBeVisible()
-  }).toPass({ timeout: 10_000 })
-}
-
-export async function submitEmptyManageService(page: Page): Promise<void> {
-  await waitForManageServicesClientReady(page, () => page.goto('/manage/services'))
-
-  await expect(async () => {
-    await page.locator('#title').click()
-    await page.getByRole('button', { name: 'Create service' }).click()
-    await expect(page.getByRole('heading', { name: 'There is a problem' })).toBeVisible()
-  }).toPass({ timeout: 10_000 })
-}
-
-export async function openDeleteConfirmDialog(page: Page): Promise<void> {
-  await waitForManageServicesTable(page)
-
-  await expect(async () => {
-    if (await page.getByRole('heading', { name: 'We could not load this page' }).isVisible()) {
-      await waitForManageServicesClientReady(page, () => page.goto('/manage/services'))
-    }
-
-    await expect(page.getByRole('heading', { name: 'Manage services' })).toBeVisible()
-    await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
-
-    const deleteButton = page.locator('#existing-services-table').getByRole('button', { name: 'Delete' }).first()
-    await deleteButton.click()
-    await expect(page.getByRole('alertdialog')).toBeVisible()
-  }).toPass({ timeout: 15_000 })
 }
 
 export async function setTheme(page: Page, theme: 'light' | 'dark'): Promise<void> {
@@ -144,7 +110,7 @@ export async function openMobileMenu(page: Page): Promise<void> {
     await expect(menuToggle).toHaveAttribute('aria-expanded', 'true')
   }).toPass()
 
-  await expect(page.locator('#main-nav').getByRole('link', { name: 'Home' })).toBeVisible()
+  await expect(page.locator('#main-nav').getByRole('link', { name: copy.nav.home })).toBeVisible()
 }
 
 export async function fillServiceTitle(page: Page, title: string): Promise<void> {
@@ -165,24 +131,24 @@ export async function fillServiceTitle(page: Page, title: string): Promise<void>
 }
 
 export async function navigateToFirstServiceDetail(page: Page): Promise<void> {
-  await page.goto('/services')
+  await page.goto(appPages.services.path)
   await waitForPageReady(page)
   await waitForServiceCards(page)
 
-  await page.getByRole('link', { name: /View service details for/i }).first().click()
+  await page.getByRole('link', { name: copy.services.viewDetailsLink }).first().click()
   await expect(page).toHaveURL(/\/services\/.+/)
   await waitForPageReady(page)
 }
 
-export type PageVisitOptions = {
-  path: string
+export type VisitAppPageOptions = {
+  page: AppPageId
   theme?: 'light' | 'dark'
   viewport?: 'desktop' | 'mobile'
-  beforeReady?: (page: Page) => Promise<void>
 }
 
-export async function visitPage(page: Page, options: PageVisitOptions): Promise<void> {
-  const { path, theme = 'light', viewport = 'desktop', beforeReady } = options
+export async function visitAppPage(page: Page, options: VisitAppPageOptions): Promise<void> {
+  const { page: pageId, theme = 'light', viewport = 'desktop' } = options
+  const { path } = appPages[pageId]
 
   await setTheme(page, theme)
 
@@ -190,16 +156,14 @@ export async function visitPage(page: Page, options: PageVisitOptions): Promise<
     await page.setViewportSize(mobileViewport)
   }
 
-  if (path === '/manage/services') {
+  if (pageId === 'manageServices') {
     await waitForManageServicesClientReady(page, () => page.goto(path))
   } else {
     await page.goto(path)
     await waitForPageReady(page)
   }
 
-  await beforeReady?.(page)
-
-  if (path === '/services') {
+  if (pageId === 'services') {
     await waitForServiceCards(page)
   }
 
@@ -209,5 +173,35 @@ export async function visitPage(page: Page, options: PageVisitOptions): Promise<
 
   if (viewport === 'mobile') {
     await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible()
+  }
+}
+
+/** Visit a path by string — for error routes outside appPages. Prefer visitAppPage when possible. */
+export async function visitPage(
+  page: Page,
+  options: { path: string, theme?: 'light' | 'dark', viewport?: 'desktop' | 'mobile' },
+): Promise<void> {
+  const pageId = Object.entries(appPages).find(([, config]) => config.path === options.path)?.[0] as AppPageId | undefined
+
+  if (pageId) {
+    await visitAppPage(page, {
+      page: pageId,
+      theme: options.theme,
+      viewport: options.viewport,
+    })
+    return
+  }
+
+  await setTheme(page, options.theme ?? 'light')
+
+  if (options.viewport === 'mobile') {
+    await page.setViewportSize(mobileViewport)
+  }
+
+  await page.goto(options.path)
+  await waitForPageReady(page)
+
+  if (options.theme === 'dark') {
+    await assertDarkThemeApplied(page)
   }
 }

@@ -40,44 +40,17 @@ async function createManageService(page: Page, title: string): Promise<void> {
   await expect(page.getByRole('status')).toContainText('has been added.')
 }
 
-async function findServiceRow(page: Page, serviceHref: string) {
-  const row = page.locator('tr').filter({
-    has: page.locator(`a[href="${serviceHref}"]`),
-  })
-
-  for (let attempt = 0; attempt < 10; attempt += 1) {
-    if (await row.isVisible()) {
-      return row
-    }
-
-    const nextButton = page.getByRole('button', { name: 'Next' })
-    if (!(await nextButton.isEnabled())) {
-      break
-    }
-
-    await nextButton.click()
-  }
-
-  return row
-}
-
-async function getCreatedServiceRow(page: Page) {
-  const detailsHref = await page.getByRole('link', { name: 'View service details' }).getAttribute('href')
-
-  if (!detailsHref) {
-    throw new Error('Expected a service details link after creating a service.')
-  }
-
-  await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
-  await expect(page.locator(`a[href="${detailsHref}"]`)).toBeVisible({ timeout: 15_000 })
-
-  return findServiceRow(page, detailsHref)
-}
-
 async function openEditFromSuccessLink(page: Page): Promise<void> {
-  await page.getByRole('link', { name: 'View service details' }).click()
+  await page.getByRole('status').getByRole('link', { name: 'View service details' }).click()
   await page.getByRole('link', { name: 'Edit service' }).click()
   await expect(page).toHaveURL(/\/manage\/services\//)
+}
+
+async function findExistingServiceRow(page: Page, title: string) {
+  await page.getByRole('heading', { name: 'Existing services' }).scrollIntoViewIfNeeded()
+  await page.locator('#existingServicesSearch').fill(title)
+
+  return page.getByRole('row', { name: new RegExp(title) })
 }
 
 test('create service from manage page', async ({ page }) => {
@@ -121,15 +94,34 @@ test('delete service from manage page', async ({ page }) => {
 
   await createManageService(page, title)
 
-  const row = await getCreatedServiceRow(page)
+  const href = await page
+    .getByRole('status')
+    .getByRole('link', { name: 'View service details' })
+    .getAttribute('href')
+
+  if (!href) {
+    throw new Error('Expected a service details link after creating a service.')
+  }
+
+  const serviceId = href.replace('/services/', '')
+  const row = await findExistingServiceRow(page, title)
+
   await expect(row).toBeVisible({ timeout: 15_000 })
   await row.getByRole('button', { name: 'Delete' }).click()
 
   await expect(page.getByRole('alertdialog')).toBeVisible()
   await expect(page.getByRole('alertdialog')).toContainText('Delete this service?')
 
+  const deleteResponse = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE'
+      && response.url().includes(`/api/services/${serviceId}`)
+      && response.ok(),
+  )
+
   await page.getByRole('button', { name: 'Yes, delete service' }).click()
+  await deleteResponse
 
   await expect(page.getByRole('alertdialog')).not.toBeVisible()
-  await expect(page.getByRole('link', { name: title })).not.toBeVisible()
+  await expect(row).not.toBeVisible({ timeout: 15_000 })
 })

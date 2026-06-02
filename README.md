@@ -2,22 +2,24 @@
 
 An accessible web app for browsing local support services and submitting support requests. Built with **Nuxt 3** on the frontend and a **Ruby on Rails API** backed by **PostgreSQL**.
 
+**Learning / portfolio project** — focused on accessible forms, frontend–backend integration, and accessibility testing. Not production-ready (no authentication, email, or CMS).
+
 **Live app:** [support-request-journey.vercel.app](https://support-request-journey.vercel.app)
 
 ## Features
 
-- Browse and filter support services by category and search
-- View service details (eligibility, contact, opening hours, accessibility)
-- Create new support services at `/manage/services` (accessible form, client and server validation)
-- Submit a support request through an accessible form (client and server validation)
+- Browse, search, and filter support services (with pagination on long lists)
+- View service details (eligibility, contact, opening hours, accessibility notes)
+- Submit a support request through an accessible form (client and server validation, reference number from the API)
+- Manage services at `/manage/services` — create, edit, and delete with validation and an accessible delete confirmation dialog
 - Light / dark theme toggle (icon-only on small screens, with an accessible name)
 - Responsive header with a mobile navigation menu (keyboard and screen-reader friendly)
 - Skip link to jump straight to the main content
-- Unit tests (Vitest) and end-to-end tests (Playwright), including automated accessibility scans
+- Unit tests (Vitest), end-to-end tests (Playwright), and automated accessibility scans (axe)
 
 ## Architecture
 
-The browser only talks to the Nuxt app. Nuxt server routes proxy requests to the Rails API using private runtime config (`NUXT_API_BASE`).
+The browser only talks to the Nuxt app. Nuxt server routes proxy requests to the Rails API using private server-side config (see [Environment variables](#environment-variables)).
 
 **Local development:**
 
@@ -46,12 +48,18 @@ Browser
 | **Rails API** (`backend/`) | JSON API, models, validations, persistence |
 | **PostgreSQL** | Stores services and support requests |
 
-Frontend endpoints (use these from the app, not Rails directly):
+**Frontend API** (same origin as the app — use these from the UI, not the Rails host directly):
 
-- `GET /api/services`
-- `GET /api/services/:id`
-- `POST /api/services`
-- `POST /api/support-requests`
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/services` | List services |
+| GET | `/api/services/:id` | One service |
+| POST | `/api/services` | Create a service |
+| PATCH | `/api/services/:id` | Update a service |
+| DELETE | `/api/services/:id` | Delete a service |
+| POST | `/api/support-requests` | Create a support request |
+
+Rails routes, request bodies, and curl examples: [`backend/README.md`](./backend/README.md).
 
 ## Tech stack
 
@@ -59,6 +67,7 @@ Frontend endpoints (use these from the app, not Rails directly):
 
 - Nuxt 3, Vue 3, TypeScript
 - Tailwind CSS
+- `@nuxt/a11y` (development-time accessibility feedback in Nuxt DevTools)
 
 **Backend**
 
@@ -96,7 +105,11 @@ bin/rails db:create db:migrate db:seed
 bin/rails server -p 3001
 ```
 
+Or from the project root: `npm run dev:backend`
+
 Health check: [http://localhost:3001/up](http://localhost:3001/up) (green page = OK)
+
+**Seeds:** 30 sample services across five categories. Running `db:seed` replaces the service catalogue and clears existing support requests (for a clean local dataset).
 
 ### 2. Frontend (Nuxt)
 
@@ -127,87 +140,30 @@ Copy `.env.example` to `.env` to override locally. In production (Vercel), set `
 
 The Vercel frontend calls the Render API through Nuxt server routes. Set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` in Vercel project settings and redeploy after changing it.
 
-Backend deployment uses `backend/` as the Render root directory (`Procfile`, `bin/render-build.sh`). See [`backend/README.md`](./backend/README.md) for API and deployment details.
+If the live services list is empty after deploy, the frontend API URL is usually missing or incorrect.
 
-## Rails API (reference)
-
-Base URL in development: `http://localhost:3001/api`
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/services` | List all services (ordered by title) |
-| GET | `/services/:id` | One service, or 404 |
-| POST | `/services` | Create a service (201 + JSON, or 422 with validation errors) |
-| POST | `/support_requests` | Create a support request (`status: "new"`, reference e.g. `SR-0001`) |
-
-Example:
-
-```bash
-curl http://localhost:3001/api/services
-
-curl -X POST http://localhost:3001/api/services \
-  -H "Content-Type: application/json" \
-  -d '{
-    "service": {
-      "title": "Digital skills café for older residents",
-      "category": "family",
-      "description": "Weekly sessions with volunteer helpers for older adults learning to use smartphones.",
-      "eligibility": "Residents aged 60 and over.",
-      "contact_email": "digital.cafe@example-council.gov.uk",
-      "phone": "020 7946 0958",
-      "opening_hours": "Every Wednesday, 1pm to 4pm",
-      "accessibility_notes": "Large-print handouts and seated one-to-one support.",
-      "online_support": false
-    }
-  }'
-```
+Backend deployment uses `backend/` as the Render root directory. See [`backend/README.md`](./backend/README.md) for API reference and Render settings.
 
 ## Testing
 
 From the project root:
 
-```bash
-npm run test          # unit tests (Vitest)
-npm run test:backend  # Rails API tests (Minitest; needs PostgreSQL)
-npm run build         # production build
-npm run test:e2e      # all Playwright tests (starts Rails + preview)
-```
+| Command | What it runs |
+|---------|----------------|
+| `npm run test` | Vitest unit tests |
+| `npm run test:backend` | Rails Minitest (needs PostgreSQL) |
+| `npm run test:e2e` | Playwright **e2e** project — user journeys, manage CRUD, keyboard tests |
+| `npm run test:a11y` | Playwright **a11y** project — axe WCAG scans |
+| `npm run test:all` | Both Playwright projects |
+| `npm run build` | Production build |
 
-**Backend (Rails + Minitest)**
+**Backend (Rails + Minitest)** — 23 tests (models, services API including PATCH/DELETE, support requests). From `backend/`: `bin/rails db:test:prepare test`, or `npm run test:backend` from the root.
 
-From the project root:
+**Playwright e2e project** — full support-request journey; create, update, and delete services; keyboard navigation (skip link, mobile menu, validation focus, delete dialog, theme toggle).
 
-```bash
-npm run test:backend
-```
+**Playwright a11y project** — 19 axe-core scans (WCAG 2.0/2.1 A and AA): main routes, light/dark, desktop/mobile, mobile menu open on home and services, service detail, edit service, error pages, validation states, delete dialog open.
 
-Or from `backend/`:
-
-```bash
-bin/rails db:test:prepare test
-```
-
-This runs **17 tests** covering:
-
-| Layer | File | What it covers |
-|-------|------|----------------|
-| Models | `test/models/service_test.rb` | Validations, associations |
-| Models | `test/models/support_request_test.rb` | Validations, default status, reference format, consent |
-| API | `test/controllers/api/services_controller_test.rb` | `GET /api/services`, `GET /api/services/:id`, `POST /api/services` (201/422/404) |
-| API | `test/controllers/api/support_requests_controller_test.rb` | `POST /api/support_requests` (201/422) |
-
-Requires PostgreSQL and the `backend_test` database (created automatically by `db:test:prepare`).
-
-**Frontend e2e (Playwright)**
-
-| File | What it covers |
-|------|----------------|
-| `tests/e2e/journey.spec.ts` | Full user journey from home to support request success |
-| `tests/e2e/manage-services.spec.ts` | Create service flow and validation |
-| `tests/e2e/accessibility.spec.ts` | axe-core WCAG scans (18 tests) |
-| `tests/e2e/keyboard-navigation.spec.ts` | Skip link and mobile menu keyboard behaviour (3 tests) |
-
-**Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server instead of a production preview and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
+**Tip:** If `npm run dev` is already using port 3000, Playwright may reuse the dev server and some e2e tests can fail. Stop the dev server first, or run `CI=1 npm run test:e2e` for a clean run.
 
 ## Continuous integration
 
@@ -215,105 +171,40 @@ Requires PostgreSQL and the `backend_test` database (created automatically by `d
 
 - **Frontend** — Vitest unit tests and production build
 - **Backend** — Rails tests with PostgreSQL
-- **E2E** — Playwright full-stack tests (user journey and axe accessibility checks)
+- **Playwright** — `npm run test:all` (e2e flows, keyboard tests, and axe accessibility scans)
 
-## Accessibility checks
+Run only one Playwright project locally: `npm run test:e2e` or `npm run test:a11y`.
 
-The app uses semantic HTML, visible focus states, accessible forms, error summaries, field-level errors, `aria-describedby`, `aria-invalid` and `aria-live`.
+## Accessibility
 
-Navigation and layout:
+The app follows accessibility best practices: semantic HTML, visible focus states, accessible forms (error summary, field-level errors, `aria-describedby`, `aria-invalid`, `aria-live`), keyboard-friendly navigation and dialogs. Automated tools help but do **not** prove full WCAG compliance — manual keyboard and screen reader checks are still needed.
 
-- **Skip link** — first focusable control; moves focus to `#main-content`
-- **Desktop nav** — horizontal links in the header from `640px` width up
-- **Mobile nav** — hamburger button with `aria-expanded`, `aria-controls`, and `aria-label` (`Open menu` / `Close menu`); menu closes on Escape, route change, or link selection; focus moves to the first link when opened and returns to the toggle when closed; Tab wraps from the last link to the first
-- **Theme toggle** — shows icon + text label on desktop; icon-only on mobile with `aria-label` (`Switch to light mode` / `Switch to dark mode`)
+### During development
 
-Automated tools are helpful, but they do not replace manual testing. Accessibility still needs screen reader checks and human judgement.
+**Nuxt Accessibility (`@nuxt/a11y`)** — with `npm run dev`, open [http://localhost:3000](http://localhost:3000), then **Nuxt DevTools → Nuxt a11y**. The module scans pages as you navigate and shows axe-core issues. Development only; not part of production builds or CI.
 
 ### Automated checks
 
-**Nuxt Accessibility (`@nuxt/a11y`)**
-
-During development, start the app with `npm run dev`, open [http://localhost:3000](http://localhost:3000), then open **Nuxt DevTools** and click the **Nuxt a11y** tab. The module scans pages as you navigate and shows axe-core violations in the DevTools panel. It runs in development only and does not fail production builds.
-
-**Playwright + axe**
-
-Run automated accessibility scans against the main routes:
-
 ```bash
-npm run test:a11y
-# or explicitly:
-npm run test:a11y:axe
+npm run test:a11y      # Playwright + axe (19 scans)
+npm run test:e2e       # includes 6 keyboard behaviour tests
+npm run test:a11y:pa11y   # optional Pa11y smoke on 5 local URLs (app must be running)
 ```
 
-This starts Rails and a production preview, then scans these routes with axe-core against WCAG 2.0/2.1 A and AA:
+Axe coverage includes `/`, `/services`, `/request-support`, `/manage/services`, service detail, edit service, 404 and service-not-found pages, validation error states, delete dialog open, light/dark, desktop/mobile, and mobile menu open on home and services.
 
-- `/`, `/services`, `/request-support`, `/manage/services`
-- **Light and dark mode**
-- **Desktop and mobile** (iPhone 13 viewport)
-- **Mobile menu open** on the home page
+### Manual review
 
-That is **18 axe tests** in `tests/e2e/accessibility.spec.ts`.
-
-**Keyboard navigation (Playwright)**
-
-Automated keyboard checks for the skip link and mobile menu:
-
-```bash
-npx playwright test tests/e2e/keyboard-navigation.spec.ts
-```
-
-These run as part of `npm run test:e2e` as well.
-
-**Pa11y**
-
-Run command-line WCAG 2.0 AA checks against a **running local app** (start `npm run dev` or `npm run preview` first):
-
-```bash
-npm run test:a11y:pa11y
-```
-
-Pa11y reads URLs from `.pa11yci` (localhost only) and prints results in the terminal. This is a local/CI check — it does not affect production deploys. To scan a deployed site you would change the URLs in `.pa11yci` manually; only `NUXT_API_BASE` needs to change for a normal deploy.
-
-### Manual review tools
-
-These are useful alongside automated checks:
-
-- **axe DevTools** — browser extension for quick manual scans and element inspection
-- **Lighthouse** — built into Chrome DevTools for a fast accessibility audit
-- **WAVE** — browser extension for visual review of contrast, headings, labels and structure
-- **Accessibility Insights** — guided manual checks (keyboard, focus order, contrast)
-- **Browser DevTools accessibility tree** — inspect accessible names, roles and how the page structure is exposed
-- **Storybook accessibility addon** — useful for projects that use Storybook (this project does not use Storybook)
-
-### Manual checklist
-
-- Navigate the whole app using only the keyboard.
-- Check focus is always visible.
-- Check heading order.
-- Check labels on all form controls.
-- Check the error summary links to invalid fields.
-- Check field-level errors are announced correctly.
-- Check success messages use `aria-live`.
-- Check errors and success states do not rely only on colour.
-- Check colour contrast in light and dark mode.
-- Check the support request form on mobile width.
-- Check the manage services form on mobile width.
-- Open and close the mobile menu with keyboard only (Space/Enter, Escape, Tab wrap).
-- Check the theme toggle with keyboard and that it has a clear accessible name on mobile.
-- Use the skip link and confirm focus lands on the main content.
+- Navigate with keyboard only; check focus is visible
+- Check heading order and form labels
+- Check error summary links and success announcements
+- Test mobile menu and theme toggle with keyboard
+- Use browser DevTools accessibility tree, Lighthouse, WAVE, or Accessibility Insights as needed
 
 ## Project structure
 
 ```
-├── backend/              # Rails API
-│   ├── app/models/       # Service, SupportRequest
-│   ├── app/controllers/api/
-│   ├── bin/render-build.sh  # Render build script
-│   ├── Procfile          # Puma start command for Render
-│   ├── test/             # Minitest (models + API)
-│   ├── db/migrate/       # PostgreSQL schema
-│   └── db/seeds.rb       # Sample services (idempotent)
+├── backend/              # Rails API (see backend/README.md)
 ├── components/           # Vue UI components
 ├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
@@ -322,4 +213,4 @@ These are useful alongside automated checks:
 └── utils/                # Validation, API mappers
 ```
 
-See [`backend/README.md`](./backend/README.md) for the Rails API reference, models, and Render deployment notes.
+See [`backend/README.md`](./backend/README.md) for models, Rails routes, curl examples, and Render deployment.

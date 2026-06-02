@@ -2,6 +2,8 @@
 
 JSON API for the [Support Request Journey](../README.md) app. Stores support services and support request submissions in **PostgreSQL**.
 
+Part of a learning / portfolio project (see the root README for the full app and frontend).
+
 The browser never calls this API directly. **Nuxt** server routes proxy requests using `NUXT_API_BASE` (default `http://localhost:3001/api`).
 
 **Production API:** [support-request-journey.onrender.com](https://support-request-journey.onrender.com)
@@ -18,13 +20,7 @@ The browser never calls this API directly. **Nuxt** server routes proxy requests
 - Ruby 3.4+ and Bundler
 - PostgreSQL 16+ running locally
 
-On macOS with Homebrew:
-
-```bash
-brew install ruby postgresql@16
-brew services start postgresql@16
-export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:/opt/homebrew/opt/postgresql@16/bin:$PATH"
-```
+For full stack setup (Node, PATH, Homebrew), see the [root README](../README.md#prerequisites).
 
 ## Getting started
 
@@ -38,7 +34,9 @@ bin/rails server -p 3001
 
 Health check: [http://localhost:3001/up](http://localhost:3001/up) — a green page means Rails booted correctly.
 
-Start the Nuxt frontend from the project root in a second terminal (`npm run dev` on port 3000).
+`db:seed` loads **30** sample services (five categories, six each). It clears existing services and support requests first.
+
+Start the Nuxt frontend from the project root in a second terminal (`npm run dev` on port 3000), or run `npm run dev:backend` from the root for Rails only.
 
 ## API
 
@@ -169,7 +167,7 @@ config/
 db/
 ├── migrate/             # Schema migrations
 ├── schema.rb
-└── seeds.rb             # Sample services (idempotent find_or_create_by!)
+└── seeds.rb             # 30 sample services (replaces catalogue on db:seed)
 Procfile                 # web: bundle exec puma -C config/puma.rb
 test/
 ├── models/              # Validation and association tests
@@ -206,7 +204,7 @@ The root [GitHub Actions workflow](../.github/workflows/ci.yml) runs on pull req
 
 - **Frontend** — Vitest unit tests and production build
 - **Backend** — Rails tests with PostgreSQL 16
-- **E2E** — Playwright full-stack tests
+- **Playwright** — full-stack e2e, keyboard, and axe accessibility tests (`npm run test:all`)
 
 This directory also has `bin/ci` for local Rails security and style checks (Brakeman, bundler-audit, RuboCop, Minitest).
 
@@ -239,6 +237,8 @@ export DATABASE_URL="..." RAILS_ENV=production RAILS_MASTER_KEY="$(cat config/ma
 bundle exec rails db:seed
 ```
 
+**Warning:** `db:seed` deletes all services and support requests, then inserts 30 sample services. Use only when you want to reset the catalogue.
+
 **Vercel:** set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` and redeploy the frontend.
 
-Seeds are idempotent (`find_or_create_by!` on service title). Production uses Ruby **3.4.4** because Render does not support Ruby 4.0 yet.
+Production uses Ruby **3.4.4** because Render does not support Ruby 4.0 yet.

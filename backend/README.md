@@ -6,7 +6,7 @@ Part of a learning / portfolio project (see the root README for the full app and
 
 The browser never calls this API directly. **Nuxt** server routes proxy requests using `NUXT_API_BASE` (default `http://localhost:3001/api`).
 
-**Production API:** [support-request-journey.onrender.com](https://support-request-journey.onrender.com)
+**Production API base:** `https://support-request-journey.onrender.com/api` (not a website — `/` returns 404; check [health `/up`](https://support-request-journey.onrender.com/up) or [services](https://support-request-journey.onrender.com/api/services))
 
 ## Stack
 

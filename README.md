@@ -133,10 +133,12 @@ Copy `.env.example` to `.env` to override locally. In production (Vercel), set `
 
 ## Production
 
-| Service | Host |
-|---------|------|
-| Frontend (Nuxt) | [support-request-journey.vercel.app](https://support-request-journey.vercel.app) |
-| Backend (Rails API) | [support-request-journey.onrender.com](https://support-request-journey.onrender.com) |
+| Service | Role | Open in browser |
+|---------|------|-----------------|
+| **Frontend (Nuxt)** | The web app users visit | [support-request-journey.vercel.app](https://support-request-journey.vercel.app) |
+| **Backend (Rails API)** | JSON API only (no HTML home page) | Health: […/up](https://support-request-journey.onrender.com/up) · Data: […/api/services](https://support-request-journey.onrender.com/api/services) |
+
+The root URL `https://support-request-journey.onrender.com/` returns **404** on purpose — Rails only serves `/up` and `/api/*`. That is normal; use **Vercel** for the app.
 
 The Vercel frontend calls the Render API through Nuxt server routes. Set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` in Vercel project settings and redeploy after changing it.
 

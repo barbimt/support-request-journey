@@ -2,7 +2,7 @@
 
 An accessible web app for browsing local support services and submitting support requests. Built with **Nuxt 3** on the frontend and a **Ruby on Rails API** backed by **PostgreSQL**.
 
-**Learning / portfolio project** — focused on accessible forms, frontend–backend integration, and accessibility testing. Not production-ready (no authentication, email, or CMS).
+**Focused learning project** — built to practise accessible forms, frontend–backend integration, deployment, and accessibility testing. Not production-ready (no authentication, email, or CMS).
 
 **Live app:** [support-request-journey.vercel.app](https://support-request-journey.vercel.app)
 
@@ -14,8 +14,18 @@ An accessible web app for browsing local support services and submitting support
 - Manage services at `/manage/services` — create, edit, and delete with validation and an accessible delete confirmation dialog
 - Light / dark theme toggle (icon-only on small screens, with an accessible name)
 - Responsive header with a mobile navigation menu (keyboard and screen-reader friendly)
+- Custom error pages (site-wide 404 and service-not-found on detail routes)
 - Skip link to jump straight to the main content
 - Unit tests (Vitest), end-to-end tests (Playwright), and automated accessibility scans (axe)
+
+## What this project demonstrates
+
+- Building accessible, mobile-first Vue/Nuxt pages
+- Handling client-side and backend validation in forms
+- Using Nuxt server routes as a backend-for-frontend layer
+- Connecting a Nuxt frontend to a Rails API and PostgreSQL
+- Testing user journeys, keyboard behaviour, and accessibility checks
+- Deploying frontend and backend separately with Vercel and Render
 
 ## Architecture
 
@@ -78,7 +88,7 @@ Rails routes, request bodies, and curl examples: [`backend/README.md`](./backend
 ## Prerequisites
 
 - **Node.js** 18+ and npm
-- **Ruby** 3.4+ (see `backend/.ruby-version`; Ruby 4.0+ works locally on macOS)
+- **Ruby** 3.4+ (see `backend/.ruby-version`)
 - **PostgreSQL** 16+
 
 On macOS with Homebrew:
@@ -88,7 +98,7 @@ brew install ruby postgresql@16
 brew services start postgresql@16
 ```
 
-Use Homebrew Ruby in your terminal (macOS system Ruby is too old for Rails 8):
+Use Homebrew Ruby in your terminal, because macOS system Ruby is too old for Rails 8:
 
 ```bash
 export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:/opt/homebrew/opt/postgresql@16/bin:$PATH"
@@ -109,7 +119,7 @@ Or from the project root: `npm run dev:backend`
 
 Health check: [http://localhost:3001/up](http://localhost:3001/up) (green page = OK)
 
-**Seeds:** 30 sample services across five categories. Running `db:seed` replaces the service catalogue and clears existing support requests (for a clean local dataset).
+**Seeds:** `db:seed` in the commands above loads sample data (see [`backend/README.md`](./backend/README.md#getting-started) — destructive reset).
 
 ### 2. Frontend (Nuxt)
 
@@ -179,7 +189,7 @@ Run only one Playwright project locally: `npm run test:e2e` or `npm run test:a11
 
 ## Accessibility
 
-The app follows accessibility best practices: semantic HTML, visible focus states, accessible forms (error summary, field-level errors, `aria-describedby`, `aria-invalid`, `aria-live`), keyboard-friendly navigation and dialogs. Automated tools help but do **not** prove full WCAG compliance — manual keyboard and screen reader checks are still needed.
+The app applies accessibility best practices: semantic HTML, visible focus states, accessible forms (error summary, field-level errors, `aria-describedby`, `aria-invalid`, `aria-live`), keyboard-friendly navigation and dialogs. Automated tools help but do **not** prove full WCAG compliance — manual keyboard and screen reader checks are still needed.
 
 ### During development (live feedback)
 

@@ -1,23 +1,37 @@
 # Support Request Journey — Rails API
 
-JSON API for the [Support Request Journey](../README.md) app. Stores support services and support request submissions in **PostgreSQL**.
+JSON API for the [Support Request Journey](../README.md) app.
 
-Part of a learning / portfolio project (see the root README for the full app and frontend).
+This API provides the data layer for the Nuxt app. It stores support services and support requests, validates submitted data, and returns JSON responses used by the frontend forms.
+
+**Focused learning project** — see the root README for the full app and frontend.
 
 The browser never calls this API directly. **Nuxt** server routes proxy requests using `NUXT_API_BASE` (default `http://localhost:3001/api`).
 
-**Production API base:** `https://support-request-journey.onrender.com/api` (not a website — `/` returns 404; check [health `/up`](https://support-request-journey.onrender.com/up) or [services](https://support-request-journey.onrender.com/api/services))
+**Production API base:** `https://support-request-journey.onrender.com/api`
+
+The production API is not a public website. The root path `/` may return 404. Use [`/up`](https://support-request-journey.onrender.com/up) for the health check or [`/api/services`](https://support-request-journey.onrender.com/api/services) to verify API data.
+
+## What this API demonstrates
+
+- A small Rails API in API mode
+- PostgreSQL persistence for services and support requests
+- REST-style endpoints for listing, creating, updating and deleting services
+- Backend validation for user-submitted data
+- JSON error responses for frontend form handling
+- A health check endpoint for deployment
+- Render deployment with PostgreSQL
 
 ## Stack
 
-- **Ruby** 3.4.4 (see `.ruby-version`; required for Render; Ruby 4.0+ works locally)
+- **Ruby** 3.4.4 (see `.ruby-version`)
 - **Rails** 8.1 (API mode)
 - **PostgreSQL** 16+
 - **Puma**
 
 ## Prerequisites
 
-- Ruby 3.4+ and Bundler
+- Ruby 3.4.4 and Bundler
 - PostgreSQL 16+ running locally
 
 For full stack setup (Node, PATH, Homebrew), see the [root README](../README.md#prerequisites).
@@ -34,7 +48,7 @@ bin/rails server -p 3001
 
 Health check: [http://localhost:3001/up](http://localhost:3001/up) — a green page means Rails booted correctly.
 
-`db:seed` loads **30** sample services (five categories, six each). It clears existing services and support requests first.
+**Seeds:** `db:seed` loads 30 sample services (five categories). It **deletes all existing services and support requests** first — only run when you want a clean catalogue.
 
 Start the Nuxt frontend from the project root in a second terminal (`npm run dev` on port 3000), or run `npm run dev:backend` from the root for Rails only.
 
@@ -167,7 +181,7 @@ config/
 db/
 ├── migrate/             # Schema migrations
 ├── schema.rb
-└── seeds.rb             # 30 sample services (replaces catalogue on db:seed)
+└── seeds.rb             # 30 sample services
 Procfile                 # web: bundle exec puma -C config/puma.rb
 test/
 ├── models/              # Validation and association tests
@@ -237,8 +251,8 @@ export DATABASE_URL="..." RAILS_ENV=production RAILS_MASTER_KEY="$(cat config/ma
 bundle exec rails db:seed
 ```
 
-**Warning:** `db:seed` deletes all services and support requests, then inserts 30 sample services. Use only when you want to reset the catalogue.
+Same destructive seed behaviour as in [Getting started](#getting-started) — run only when you intend to replace production data.
 
 **Vercel:** set `NUXT_API_BASE=https://support-request-journey.onrender.com/api` and redeploy the frontend.
 
-Production uses Ruby **3.4.4** because Render does not support Ruby 4.0 yet.
+Production uses Ruby 3.4.4 to match Render support and keep local and production environments aligned.

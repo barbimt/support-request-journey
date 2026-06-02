@@ -181,15 +181,18 @@ Run only one Playwright project locally: `npm run test:e2e` or `npm run test:a11
 
 The app follows accessibility best practices: semantic HTML, visible focus states, accessible forms (error summary, field-level errors, `aria-describedby`, `aria-invalid`, `aria-live`), keyboard-friendly navigation and dialogs. Automated tools help but do **not** prove full WCAG compliance — manual keyboard and screen reader checks are still needed.
 
-### During development
+### During development (live feedback)
 
-**Nuxt Accessibility (`@nuxt/a11y`)** — with `npm run dev`, open [http://localhost:3000](http://localhost:3000), then **Nuxt DevTools → Nuxt a11y**. The module scans pages as you navigate and shows axe-core issues. Development only; not part of production builds or CI.
+**Nuxt Accessibility (`@nuxt/a11y`)** — with `npm run dev`, open [http://localhost:3000](http://localhost:3000), then **Nuxt DevTools → Nuxt a11y**. The module scans pages as you navigate and shows axe-core issues in the panel. This is a **dev-only** helper: it is disabled in production builds and it does **not** run in GitHub Actions.
 
-### Automated checks
+### Automated checks (local and CI)
+
+**Playwright + axe** (`npm run test:a11y`) — the same axe engine, run as tests against a production preview. These scans **do** run in CI as part of `npm run test:all` (see [Continuous integration](#continuous-integration)). They are separate from the `@nuxt/a11y` DevTools tab.
 
 ```bash
-npm run test:a11y      # Playwright + axe (19 scans)
-npm run test:e2e       # includes 6 keyboard behaviour tests
+npm run test:a11y      # Playwright + axe only (19 scans)
+npm run test:e2e       # user flows + 6 keyboard tests
+npm run test:all       # both Playwright projects (what CI runs)
 npm run test:a11y:pa11y   # optional Pa11y smoke on 5 local URLs (app must be running)
 ```
 

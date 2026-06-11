@@ -4,7 +4,7 @@ export type ButtonType = 'button' | 'submit' | 'reset'
 
 export type ButtonSize = 'default' | 'compact'
 
-export interface AppButtonProps {
+export interface BaseButtonProps {
   to?: string
   variant?: ButtonVariant
   size?: ButtonSize

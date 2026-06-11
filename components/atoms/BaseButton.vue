@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import type { AppButtonProps, ButtonVariant } from '~/interfaces/components/atoms/AppButtonProps'
+import type { BaseButtonProps, ButtonVariant } from '~/interfaces/components/atoms/BaseButtonProps'
 
-const props = withDefaults(defineProps<AppButtonProps>(), {
+const props = withDefaults(defineProps<BaseButtonProps>(), {
   variant: 'primary',
   size: 'default',
   block: false,

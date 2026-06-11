@@ -1,7 +1,7 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <p class="mb-8">
-      <BackToHomeButton />
+      <BackLink to="/" text="Back to home" />
     </p>
 
     <div ref="resultsTop">
@@ -83,12 +83,12 @@
         This section is for teams and organisations that offer support locally. If you run a service, you can publish it here for people to find.
       </p>
       <div class="mt-6">
-        <AppButton to="/manage/services" variant="secondary">
+        <BaseButton to="/manage/services" variant="secondary">
           Add a service to the directory
-        </AppButton>
+        </BaseButton>
       </div>
     </aside>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

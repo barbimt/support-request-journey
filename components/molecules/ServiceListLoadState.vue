@@ -22,13 +22,13 @@
     <p class="body-text mt-2">
       The directory may take up to a minute to wake up on the first visit. Please try again in a moment.
     </p>
-    <AppButton
+    <BaseButton
       class="mt-4"
       variant="secondary"
       @click="emit('retry')"
     >
       Try again
-    </AppButton>
+    </BaseButton>
     </div>
   </div>
 </template>

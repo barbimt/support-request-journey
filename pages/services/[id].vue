@@ -1,8 +1,8 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <div v-if="service">
       <p class="mb-8">
-        <BackToHomeButton />
+        <BackLink to="/" text="Back to home" />
       </p>
 
       <article>
@@ -75,12 +75,12 @@
         </ContentSection>
 
         <p class="theme-divider mt-10 flex flex-wrap gap-4 border-t pt-8 sm:mt-12 sm:pt-10">
-          <AppButton to="/request-support" variant="primary">
+          <BaseButton to="/request-support" variant="primary">
             Request support
-          </AppButton>
-          <AppButton :to="`/manage/services/${service.id}`" variant="secondary">
+          </BaseButton>
+          <BaseButton :to="`/manage/services/${service.id}`" variant="secondary">
             Edit service
-          </AppButton>
+          </BaseButton>
         </p>
       </article>
     </div>
@@ -93,13 +93,13 @@
         We could not find a service with that reference.
       </p>
       <p class="mt-8 flex flex-wrap gap-4">
-        <BackToHomeButton />
-        <AppButton to="/services" variant="secondary">
+        <BackLink to="/" text="Back to home" />
+        <BaseButton to="/services" variant="secondary">
           Back to services
-        </AppButton>
+        </BaseButton>
       </p>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

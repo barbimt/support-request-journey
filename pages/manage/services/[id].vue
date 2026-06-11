@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <div v-if="service" class="form-page">
       <div ref="pageTop">
         <PageHeader
@@ -17,7 +17,7 @@
       </div>
 
       <p class="mb-8">
-        <ManageServicesBackButton />
+        <BackLink to="/manage/services" text="Back to manage services" />
       </p>
 
       <div
@@ -42,14 +42,14 @@
         <ServiceFormFields :form="form" :error-for="errorFor" />
 
         <div class="theme-divider border-t pt-8">
-          <AppButton
+          <BaseButton
             type="submit"
             variant="primary"
             :disabled="isSubmitting"
             :aria-busy="isSubmitting"
           >
             {{ isSubmitting ? 'Saving changes…' : 'Save changes' }}
-          </AppButton>
+          </BaseButton>
         </div>
       </form>
     </div>
@@ -62,10 +62,10 @@
         We could not find a service with that reference.
       </p>
       <p class="mt-8">
-        <ManageServicesBackButton />
+        <BackLink to="/manage/services" text="Back to manage services" />
       </p>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout>
-    <AppContainer>
+    <PageContainer>
       <article
         class="error-page error-page-card"
         :class="isNotFound ? 'error-page-card--not-found' : 'error-page-card--fault'"
@@ -44,23 +44,23 @@
         </section>
 
         <div class="error-page-actions">
-          <AppButton variant="primary" @click="goHome">
+          <BaseButton variant="primary" @click="goHome">
             <ArrowLeftIcon class="h-5 w-5 shrink-0" aria-hidden="true" />
             Back to home
-          </AppButton>
-          <AppButton v-if="isNotFound" to="/services" variant="secondary">
+          </BaseButton>
+          <BaseButton v-if="isNotFound" to="/services" variant="secondary">
             Browse support services
-          </AppButton>
-          <AppButton
+          </BaseButton>
+          <BaseButton
             v-if="isNotFound"
             to="/request-support"
             variant="secondary"
           >
             Request support
-          </AppButton>
+          </BaseButton>
         </div>
       </article>
-    </AppContainer>
+    </PageContainer>
   </NuxtLayout>
 </template>
 

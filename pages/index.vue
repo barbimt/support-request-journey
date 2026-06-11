@@ -1,7 +1,6 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <PageHeader
-      tag="header"
       heading-id="home-heading"
       title="Find support when you need it"
       section-class="hero mb-0"
@@ -9,12 +8,12 @@
       intro="Browse local support services, learn what help is available, and send a request if you need someone to contact you."
     >
       <div class="hero-actions">
-        <AppButton to="/services" variant="primary" size="compact">
+        <BaseButton to="/services" variant="primary" size="compact">
           Browse support services
-        </AppButton>
-        <AppButton to="/request-support" variant="ghost">
+        </BaseButton>
+        <BaseButton to="/request-support" variant="ghost">
           Request support
-        </AppButton>
+        </BaseButton>
       </div>
     </PageHeader>
 
@@ -39,7 +38,7 @@
         </p>
       </ContentSection>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

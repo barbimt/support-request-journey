@@ -1,8 +1,8 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <div class="form-page">
       <p class="mb-8">
-        <BackToHomeButton />
+        <BackLink to="/" text="Back to home" />
       </p>
 
       <PageHeader
@@ -183,7 +183,7 @@
       </FormField>
 
       <div class="theme-divider border-t pt-8">
-        <AppButton
+        <BaseButton
           type="submit"
           variant="primary"
           block
@@ -191,11 +191,11 @@
           :aria-busy="isSubmitting"
         >
           {{ isSubmitting ? 'Sending request…' : 'Send support request' }}
-        </AppButton>
+        </BaseButton>
       </div>
       </form>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

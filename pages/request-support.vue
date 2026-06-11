@@ -2,7 +2,7 @@
   <AppContainer>
     <div class="form-page">
       <p class="mb-8">
-        <BackToHomeButton />
+        <BackLink to="/" text="Back to home" />
       </p>
 
       <PageHeader

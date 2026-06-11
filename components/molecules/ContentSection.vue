@@ -16,15 +16,10 @@
 import type { ContentSectionProps } from '~/interfaces/components/molecules/ContentSectionProps'
 
 const props = withDefaults(defineProps<ContentSectionProps>(), {
-  panel: false,
   divider: true,
 })
 
 const sectionClass = computed(() => {
-  if (props.panel) {
-    return 'info-panel'
-  }
-
   if (!props.divider) {
     return ''
   }

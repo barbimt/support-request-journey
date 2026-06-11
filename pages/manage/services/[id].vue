@@ -17,7 +17,7 @@
       </div>
 
       <p class="mb-8">
-        <ManageServicesBackButton />
+        <BackLink to="/manage/services" text="Back to manage services" />
       </p>
 
       <div
@@ -62,7 +62,7 @@
         We could not find a service with that reference.
       </p>
       <p class="mt-8">
-        <ManageServicesBackButton />
+        <BackLink to="/manage/services" text="Back to manage services" />
       </p>
     </div>
   </AppContainer>

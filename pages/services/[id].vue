@@ -2,7 +2,7 @@
   <AppContainer>
     <div v-if="service">
       <p class="mb-8">
-        <BackToHomeButton />
+        <BackLink to="/" text="Back to home" />
       </p>
 
       <article>
@@ -93,7 +93,7 @@
         We could not find a service with that reference.
       </p>
       <p class="mt-8 flex flex-wrap gap-4">
-        <BackToHomeButton />
+        <BackLink to="/" text="Back to home" />
         <AppButton to="/services" variant="secondary">
           Back to services
         </AppButton>

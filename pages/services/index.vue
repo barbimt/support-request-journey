@@ -1,7 +1,7 @@
 <template>
   <AppContainer>
     <p class="mb-8">
-      <BackToHomeButton />
+      <BackLink to="/" text="Back to home" />
     </p>
 
     <div ref="resultsTop">

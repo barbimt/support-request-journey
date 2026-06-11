@@ -1,7 +1,6 @@
 <template>
   <AppContainer>
     <PageHeader
-      tag="header"
       heading-id="home-heading"
       title="Find support when you need it"
       section-class="hero mb-0"

@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <div v-if="service">
       <p class="mb-8">
         <BackLink to="/" text="Back to home" />
@@ -75,12 +75,12 @@
         </ContentSection>
 
         <p class="theme-divider mt-10 flex flex-wrap gap-4 border-t pt-8 sm:mt-12 sm:pt-10">
-          <AppButton to="/request-support" variant="primary">
+          <BaseButton to="/request-support" variant="primary">
             Request support
-          </AppButton>
-          <AppButton :to="`/manage/services/${service.id}`" variant="secondary">
+          </BaseButton>
+          <BaseButton :to="`/manage/services/${service.id}`" variant="secondary">
             Edit service
-          </AppButton>
+          </BaseButton>
         </p>
       </article>
     </div>
@@ -94,12 +94,12 @@
       </p>
       <p class="mt-8 flex flex-wrap gap-4">
         <BackLink to="/" text="Back to home" />
-        <AppButton to="/services" variant="secondary">
+        <BaseButton to="/services" variant="secondary">
           Back to services
-        </AppButton>
+        </BaseButton>
       </p>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

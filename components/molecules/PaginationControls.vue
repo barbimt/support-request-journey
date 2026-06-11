@@ -11,7 +11,7 @@
     </p>
 
     <div class="pagination-controls">
-      <AppButton
+      <BaseButton
         variant="secondary"
         size="compact"
         :disabled="currentPage <= 1"
@@ -20,7 +20,7 @@
         @click="emit('previous')"
       >
         Previous
-      </AppButton>
+      </BaseButton>
 
       <span
         class="pagination-current"
@@ -29,7 +29,7 @@
         Page {{ currentPage }} of {{ totalPages }}
       </span>
 
-      <AppButton
+      <BaseButton
         variant="secondary"
         size="compact"
         :disabled="currentPage >= totalPages"
@@ -38,7 +38,7 @@
         @click="emit('next')"
       >
         Next
-      </AppButton>
+      </BaseButton>
     </div>
   </nav>
 </template>

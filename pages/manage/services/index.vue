@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <PageContainer>
     <div class="form-page">
       <p class="mb-8">
         <BackLink to="/" text="Back to home" />
@@ -42,14 +42,14 @@
         <ServiceFormFields :form="form" :error-for="errorFor" />
 
         <div class="theme-divider border-t pt-8">
-          <AppButton
+          <BaseButton
             type="submit"
             variant="primary"
             :disabled="isSubmitting"
             :aria-busy="isSubmitting"
           >
             {{ isSubmitting ? 'Creating service…' : 'Create service' }}
-          </AppButton>
+          </BaseButton>
         </div>
       </form>
 
@@ -136,14 +136,14 @@
                     </td>
                     <td>
                       <div class="manage-services-table__actions">
-                        <AppButton
+                        <BaseButton
                           :to="`/manage/services/${service.id}`"
                           variant="secondary"
                           size="compact"
                         >
                           Edit
-                        </AppButton>
-                        <AppButton
+                        </BaseButton>
+                        <BaseButton
                           v-show="confirmDeleteId !== service.id"
                           variant="danger"
                           size="compact"
@@ -151,7 +151,7 @@
                           @click="openDeleteConfirm(service.id, $event)"
                         >
                           Delete
-                        </AppButton>
+                        </BaseButton>
                       </div>
                     </td>
                   </tr>
@@ -174,7 +174,7 @@
                           "{{ service.title }}" will be removed from the directory. This cannot be undone.
                         </p>
                         <div class="mt-4 flex flex-wrap gap-3">
-                          <AppButton
+                          <BaseButton
                             variant="danger"
                             size="compact"
                             :disabled="isDeleting"
@@ -182,15 +182,15 @@
                             @click="handleDelete(service.id)"
                           >
                             {{ isDeleting ? 'Deleting…' : 'Yes, delete service' }}
-                          </AppButton>
-                          <AppButton
+                          </BaseButton>
+                          <BaseButton
                             variant="secondary"
                             size="compact"
                             :disabled="isDeleting"
                             @click="closeDeleteConfirm()"
                           >
                             Cancel
-                          </AppButton>
+                          </BaseButton>
                         </div>
                       </div>
                     </td>
@@ -221,7 +221,7 @@
         </p>
       </section>
     </div>
-  </AppContainer>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">

@@ -69,7 +69,7 @@ export const usePagination = <T>(
     await navigateTo({ path: route.path, query }, { replace: true })
   }
 
-  watch(totalPages, (pages) => {
+  watch(totalPages, (pages: number) => {
     if (syncQueryKey && route) {
       const requestedPage = parsePageQuery(route.query[syncQueryKey])
 

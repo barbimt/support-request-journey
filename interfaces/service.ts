@@ -5,6 +5,11 @@ export type ServiceCategory =
   | 'send'
   | 'care-leavers'
 
+export interface ServiceFilterOptions {
+  search: string
+  category: ServiceCategory | '' | 'all'
+}
+
 export interface Service {
   id: string
   title: string

@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/test-utils/module', '@nuxt/a11y'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/test-utils/module', '@nuxt/a11y', '@vueuse/nuxt'],
   a11y: {
     // Dev-only feedback via Nuxt DevTools; disabled in production builds
     enabled: process.env.NODE_ENV !== 'production',

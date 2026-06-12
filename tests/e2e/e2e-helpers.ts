@@ -7,6 +7,19 @@ export const mobileViewport = devices['iPhone 13'].viewport!
 export async function waitForPageReady(page: Page): Promise<void> {
   await page.locator('#main-content').waitFor({ state: 'visible' })
   await page.locator('header .site-title').waitFor({ state: 'visible' })
+  await waitForHydration(page)
+}
+
+/**
+ * Interactions that land before Vue hydration update the DOM but not the
+ * reactive state (e.g. a filled input is reset to the empty model). Wait for
+ * the Vue app instance to be attached before interacting with the page.
+ */
+export async function waitForHydration(page: Page): Promise<void> {
+  await page.waitForFunction(() => {
+    const root = document.querySelector('#__nuxt') as { __vue_app__?: unknown } | null
+    return Boolean(root?.__vue_app__)
+  })
 }
 
 export async function waitForManagePageReady(page: Page): Promise<void> {

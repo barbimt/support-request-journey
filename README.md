@@ -87,7 +87,7 @@ Rails routes, request bodies, and curl examples: [`backend/README.md`](./backend
 
 ## Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 22 (see `.nvmrc`) and npm — use the same major version as CI when installing or updating dependencies
 - **Ruby** 3.4+ (see `backend/.ruby-version`)
 - **PostgreSQL** 16+
 
@@ -221,7 +221,7 @@ Axe coverage includes `/`, `/services`, `/request-support`, `/manage/services`, 
 ```
 ├── backend/              # Rails API (see backend/README.md)
 ├── components/           # Vue UI components
-├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
+├── composables/          # useServiceList, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
 ├── server/api/           # Nuxt proxy routes
 ├── tests/e2e/            # Playwright (journey, manage-services, accessibility, keyboard)

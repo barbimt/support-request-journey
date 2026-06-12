@@ -18,5 +18,5 @@ export interface UseServiceListReturn {
   isLoadingServices: ComputedRef<boolean>
   servicesLoadError: ComputedRef<boolean>
   hasServices: ComputedRef<boolean>
-  retryLoad: () => Promise<void>
+  refresh: () => Promise<void>
 }

@@ -1,18 +1,16 @@
 import { SERVICES_PUBLIC_PAGE_SIZE } from '~/constants/serviceList'
 import type { UseServiceListOptions, UseServiceListReturn } from '~/interfaces/composables/useServiceList'
-import type { ServiceFilterOptions } from '~/interfaces/composables/useServices'
 import type { Service, ServiceCategory } from '~/interfaces/service'
+import { filterServices } from '~/utils/filterServices'
 import { scrollIntoView } from '~/utils/scrollIntoView'
 
 export const useServiceList = (options: UseServiceListOptions = {}): UseServiceListReturn => {
-  const { getServices, filterServices } = useServices()
-
   const search = ref('')
   const category = ref<ServiceCategory | '' | 'all'>('all')
 
   const { data: services, pending, error, refresh } = useAsyncData(
     'public-services',
-    () => getServices(),
+    () => $fetch<Service[]>('/api/services'),
     { default: () => [] as Service[] },
   )
 
@@ -20,15 +18,11 @@ export const useServiceList = (options: UseServiceListOptions = {}): UseServiceL
   const isLoadingServices = computed(() => pending.value && !hasServices.value)
   const servicesLoadError = computed(() => Boolean(error.value) && !hasServices.value)
 
-  const retryLoad = async (): Promise<void> => {
-    await refresh()
-  }
-
   const filteredServices = computed(() =>
     filterServices(services.value ?? [], {
       search: search.value,
       category: category.value,
-    } satisfies ServiceFilterOptions),
+    }),
   )
 
   const {
@@ -80,6 +74,6 @@ export const useServiceList = (options: UseServiceListOptions = {}): UseServiceL
     isLoadingServices,
     servicesLoadError,
     hasServices,
-    retryLoad,
+    refresh,
   }
 }

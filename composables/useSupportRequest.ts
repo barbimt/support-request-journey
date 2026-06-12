@@ -1,3 +1,4 @@
+import { FetchError } from 'ofetch'
 import type { UseSupportRequestReturn } from '~/interfaces/composables/useSupportRequest'
 import type { SupportRequestForm } from '~/interfaces/supportRequest'
 import { mapRailsValidationErrors } from '~/utils/apiMappers'
@@ -26,13 +27,11 @@ export const useSupportRequest = (): UseSupportRequestReturn => {
         message: response.message,
         reference: response.reference,
       }
-    } catch (error: unknown) {
-      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 422) {
-        const data = (error as { data?: { errors?: Record<string, string[]> } }).data
-
+    } catch (error) {
+      if (error instanceof FetchError && error.statusCode === 422) {
         return {
           success: false as const,
-          validationErrors: mapRailsValidationErrors(data?.errors ?? {}),
+          validationErrors: mapRailsValidationErrors(error.data?.errors ?? {}),
         }
       }
 

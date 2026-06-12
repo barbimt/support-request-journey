@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Service } from '~/interfaces/service'
 import { mapServiceToForm } from '~/utils/apiMappers'
 
 definePageMeta({
@@ -77,12 +78,11 @@ definePageMeta({
 
 const route = useRoute()
 const serviceId = String(route.params.id)
-const { getServiceById } = useServices()
 const pageTop = ref<HTMLElement | null>(null)
 
 const { data: service } = await useAsyncData(
   () => `manage-service-${serviceId}`,
-  () => getServiceById(serviceId),
+  () => $fetch<Service>(`/api/services/${serviceId}`).catch(() => null),
   { default: () => null },
 )
 

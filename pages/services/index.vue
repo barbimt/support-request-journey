@@ -26,7 +26,7 @@
         :pending="isLoadingServices"
         :error="servicesLoadError"
         :has-data="hasServices"
-        @retry="retryLoad"
+        @retry="refresh"
       />
 
       <div
@@ -47,7 +47,6 @@
         <PaginationControls
           v-if="totalPages > 1"
           label="Support services pagination"
-          controls-id="services-results-grid"
           :current-page="currentPage"
           :total-pages="totalPages"
           :range-start="rangeStart"
@@ -108,7 +107,7 @@ const {
   isLoadingServices,
   servicesLoadError,
   hasServices,
-  retryLoad,
+  refresh,
 } = useServiceList({ scrollTarget: resultsTop })
 
 const showServiceResults = computed(

@@ -52,8 +52,11 @@
 
 <script setup lang="ts">
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { breakpointsTailwind } from '@vueuse/core'
 
 const route = useRoute()
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobileViewport = breakpoints.smaller('sm')
 const menuOpen = ref(false)
 const menuToggleRef = ref<HTMLButtonElement | null>(null)
 const mainNavRef = ref<HTMLElement | null>(null)
@@ -79,9 +82,6 @@ const isCurrent = (path: string): boolean => {
 
   return route.path === path || route.path.startsWith(`${path}/`)
 }
-
-const isMobileViewport = (): boolean =>
-  window.matchMedia('(max-width: 639px)').matches
 
 const getMenuLinks = (): HTMLElement[] => {
   if (!mainNavRef.value) {
@@ -119,7 +119,7 @@ const toggleMenu = (): void => {
 }
 
 const onMenuKeydown = (event: KeyboardEvent): void => {
-  if (!menuOpen.value || !isMobileViewport()) {
+  if (!menuOpen.value || !isMobileViewport.value) {
     return
   }
 
@@ -161,18 +161,10 @@ watch(
   },
 )
 
-const onWindowKeydown = (event: KeyboardEvent): void => {
+useEventListener('keydown', (event: KeyboardEvent) => {
   if (event.key === 'Escape' && menuOpen.value) {
     event.preventDefault()
     closeMenu(true)
   }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', onWindowKeydown)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', onWindowKeydown)
 })
 </script>

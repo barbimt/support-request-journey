@@ -1,5 +1,5 @@
 import { flushPromises } from '@vue/test-utils'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 import ManageServicesPage from '~/pages/manage/services/index.vue'
 
@@ -12,13 +12,7 @@ vi.mock('~/composables/useServiceManagement', () => ({
   }),
 }))
 
-vi.mock('~/composables/useServices', () => ({
-  useServices: () => ({
-    getServices: vi.fn().mockResolvedValue([]),
-    getServiceById: vi.fn(),
-    filterServices: vi.fn((services: unknown[]) => services ?? []),
-  }),
-}))
+registerEndpoint('/api/services', () => [])
 
 describe('manage services page', () => {
   it('shows validation errors when submitted empty', async () => {

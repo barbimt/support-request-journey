@@ -175,6 +175,15 @@
     @apply border-stone-200 dark:border-slate-700;
   }
 
+  /* Stacked page sections: dividers and spacing only between siblings. */
+  .stacked-sections {
+    @apply divide-y divide-stone-200 dark:divide-slate-700;
+  }
+
+  .stacked-sections > * + * {
+    @apply mt-8 pt-8 sm:mt-10 sm:pt-10;
+  }
+
   .form-field {
     @apply space-y-2;
   }

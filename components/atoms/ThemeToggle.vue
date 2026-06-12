@@ -18,29 +18,18 @@
 
 <script setup lang="ts">
 import { MoonIcon, SunIcon } from '@heroicons/vue/24/outline'
+import { breakpointsTailwind } from '@vueuse/core'
 
 const { theme, toggleTheme, initTheme } = useTheme()
 
-const isCompact = ref(true)
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isCompact = breakpoints.smaller('sm')
 
 const themeLabel = computed((): string =>
   theme.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
 )
 
-let compactMediaQuery: MediaQueryList | null = null
-
-const updateCompact = (): void => {
-  isCompact.value = !window.matchMedia('(min-width: 640px)').matches
-}
-
 onMounted(() => {
   initTheme()
-  compactMediaQuery = window.matchMedia('(min-width: 640px)')
-  updateCompact()
-  compactMediaQuery.addEventListener('change', updateCompact)
-})
-
-onUnmounted(() => {
-  compactMediaQuery?.removeEventListener('change', updateCompact)
 })
 </script>

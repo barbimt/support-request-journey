@@ -5,7 +5,6 @@ export interface PaginationControlsProps {
   rangeEnd: number
   totalItems: number
   label?: string
-  controlsId?: string
 }
 
 export interface PaginationControlsEmits {

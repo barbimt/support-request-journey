@@ -3,10 +3,7 @@
     class="pagination"
     :aria-label="label"
   >
-    <p
-      :id="statusId"
-      class="body-text text-sm"
-    >
+    <p class="body-text text-sm" role="status">
       Showing {{ rangeStart }}–{{ rangeEnd }} of {{ totalItems }}
     </p>
 
@@ -15,17 +12,12 @@
         variant="secondary"
         size="compact"
         :disabled="currentPage <= 1"
-        :aria-controls="controlsId"
-        :aria-describedby="statusId"
         @click="emit('previous')"
       >
         Previous
       </BaseButton>
 
-      <span
-        class="pagination-current"
-        aria-current="page"
-      >
+      <span class="pagination-current">
         Page {{ currentPage }} of {{ totalPages }}
       </span>
 
@@ -33,8 +25,6 @@
         variant="secondary"
         size="compact"
         :disabled="currentPage >= totalPages"
-        :aria-controls="controlsId"
-        :aria-describedby="statusId"
         @click="emit('next')"
       >
         Next
@@ -49,11 +39,9 @@ import type {
   PaginationControlsProps,
 } from '~/interfaces/components/molecules/PaginationControlsProps'
 
-const props = withDefaults(defineProps<PaginationControlsProps>(), {
+withDefaults(defineProps<PaginationControlsProps>(), {
   label: 'Pagination',
 })
 
 const emit = defineEmits<PaginationControlsEmits>()
-
-const statusId = computed(() => `pagination-status-${props.currentPage}-${props.totalPages}`)
 </script>

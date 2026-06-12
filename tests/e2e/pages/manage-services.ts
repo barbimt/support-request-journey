@@ -36,7 +36,9 @@ export class ManageServicesPage {
     this.descriptionField = page.getByLabel('Description', { exact: false })
     this.createButton = page.getByRole('button', { name: copy.manageServices.createButton })
     this.saveButton = page.getByRole('button', { name: copy.manageServices.saveButton })
-    this.successMessage = page.getByRole('status')
+    this.successMessage = page.getByRole('status').filter({
+      has: page.getByRole('link', { name: copy.manageServices.viewDetailsLink }),
+    })
     this.searchField = page.locator('#existingServicesSearch')
     this.servicesTable = page.locator('#existing-services-table')
     this.firstDeleteButton = this.servicesTable.getByRole('button', { name: copy.deleteDialog.deleteButton }).first()

@@ -203,7 +203,6 @@
             <PaginationControls
               v-if="totalPages > 1"
               label="Existing services pagination"
-              controls-id="existing-services-table"
               :current-page="currentPage"
               :total-pages="totalPages"
               :range-start="rangeStart"

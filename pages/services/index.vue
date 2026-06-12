@@ -47,7 +47,6 @@
         <PaginationControls
           v-if="totalPages > 1"
           label="Support services pagination"
-          controls-id="services-results-grid"
           :current-page="currentPage"
           :total-pages="totalPages"
           :range-start="rangeStart"

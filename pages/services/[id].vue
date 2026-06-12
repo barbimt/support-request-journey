@@ -105,12 +105,13 @@
 </template>
 
 <script setup lang="ts">
+import type { Service } from '~/interfaces/service'
+
 const route = useRoute()
-const { getServiceById } = useServices()
 
 const { data: service } = await useAsyncData(
   () => `service-${route.params.id}`,
-  () => getServiceById(String(route.params.id)),
+  () => $fetch<Service>(`/api/services/${route.params.id}`).catch(() => null),
   { default: () => null },
 )
 

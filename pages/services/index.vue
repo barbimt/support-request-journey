@@ -26,7 +26,7 @@
         :pending="isLoadingServices"
         :error="servicesLoadError"
         :has-data="hasServices"
-        @retry="retryLoad"
+        @retry="refresh"
       />
 
       <div
@@ -107,7 +107,7 @@ const {
   isLoadingServices,
   servicesLoadError,
   hasServices,
-  retryLoad,
+  refresh,
 } = useServiceList({ scrollTarget: resultsTop })
 
 const showServiceResults = computed(

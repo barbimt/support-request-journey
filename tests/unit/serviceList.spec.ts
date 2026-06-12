@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { ref } from 'vue'
 import { mockServices } from '~/data/services'
-import { useServices } from '~/composables/useServices'
+import { filterServices } from '~/utils/filterServices'
 import { usePagination } from '~/composables/usePagination'
 import { MANAGE_SERVICES_PAGE_SIZE, SERVICES_PUBLIC_PAGE_SIZE } from '~/constants/serviceList'
 
 describe('services filtering', () => {
   it('filters services by search text', () => {
-    const { filterServices } = useServices()
-
     const results = filterServices([...mockServices], {
       search: 'mental',
       category: 'all',

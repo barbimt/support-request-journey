@@ -65,7 +65,7 @@
           :pending="isLoadingServices"
           :error="servicesLoadError"
           :has-data="hasExistingServices"
-          @retry="refreshExistingServices"
+          @retry="refresh"
         />
 
         <template v-if="!isLoadingServices && !servicesLoadError && existingServices?.length">
@@ -226,11 +226,11 @@
 <script setup lang="ts">
 import { MANAGE_SERVICES_PAGE_SIZE } from '~/constants/serviceList'
 import type { Service } from '~/interfaces/service'
+import { filterServices } from '~/utils/filterServices'
 
 const pageTop = ref<HTMLElement | null>(null)
 const lastCreatedService = ref<Service | null>(null)
 
-const { getServices, filterServices } = useServices()
 const { deleteService } = useServiceManagement()
 const {
   form,
@@ -245,16 +245,12 @@ const {
 
 const { data: existingServices, pending: isLoadingServices, refresh, error: servicesFetchError } = useAsyncData(
   'manage-services-list',
-  () => getServices(),
+  () => $fetch<Service[]>('/api/services'),
   { default: () => [] as Service[] },
 )
 
 const hasExistingServices = computed(() => (existingServices.value?.length ?? 0) > 0)
 const servicesLoadError = computed(() => Boolean(servicesFetchError.value) && !hasExistingServices.value)
-
-const refreshExistingServices = async (): Promise<void> => {
-  await refresh()
-}
 
 const searchQuery = ref('')
 const confirmDeleteId = ref<string | null>(null)

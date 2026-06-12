@@ -221,7 +221,7 @@ Axe coverage includes `/`, `/services`, `/request-support`, `/manage/services`, 
 ```
 ├── backend/              # Rails API (see backend/README.md)
 ├── components/           # Vue UI components
-├── composables/          # useServices, useServiceManagement, useSupportRequest, etc.
+├── composables/          # useServiceList, useServiceManagement, useSupportRequest, etc.
 ├── pages/                # Routes (services, manage/services, request-support)
 ├── server/api/           # Nuxt proxy routes
 ├── tests/e2e/            # Playwright (journey, manage-services, accessibility, keyboard)

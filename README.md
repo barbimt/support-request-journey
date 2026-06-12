@@ -87,7 +87,7 @@ Rails routes, request bodies, and curl examples: [`backend/README.md`](./backend
 
 ## Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 22 (see `.nvmrc`) and npm — use the same major version as CI when installing or updating dependencies
 - **Ruby** 3.4+ (see `backend/.ruby-version`)
 - **PostgreSQL** 16+
 
